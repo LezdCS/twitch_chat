@@ -60,8 +60,7 @@ class Emote {
     );
   }
 
-  factory Emote.fromJsonCheerEmotes(
-      Map<String, dynamic> map, String prefix) {
+  factory Emote.fromJsonCheerEmotes(Map<String, dynamic> map, String prefix) {
     return Emote(
       id: map["id"],
       name: prefix + map["id"],
@@ -110,7 +109,7 @@ class Emote {
       color: null,
       emoteType: EmoteType.thirdPart,
       isZeroWidth:
-      map['visibility_simple'].contains("ZERO_WIDTH") ? true : false,
+          map['visibility_simple'].contains("ZERO_WIDTH") ? true : false,
     );
   }
 
@@ -147,4 +146,10 @@ class Emote {
     }
     return emotes;
   }
+
+
+
+
+
+
 }

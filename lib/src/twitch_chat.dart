@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:twitch_chat/src/badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
+import 'package:twitch_chat/src/data/ffz_api.dart';
+import 'package:twitch_chat/src/data/seventv_api.dart';
+import 'package:twitch_chat/src/data/twitch_api.dart';
 import 'package:twitch_chat/src/parameters.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -12,6 +15,7 @@ import 'chat_events/incoming_raid.dart';
 import 'chat_events/reward_redemption.dart';
 import 'chat_events/sub_gift.dart';
 import 'chat_events/subscription.dart';
+import 'data/bttv_api.dart';
 import 'emote.dart';
 
 class TwitchChat {
@@ -54,12 +58,21 @@ class TwitchChat {
     emotes.clear();
     cheerEmotes.clear();
     thirdPartEmotes.clear();
-    //TODO call twitch API to get channelId
-    Badge.getBadges(_token, _channelId!, clientId!)
-        .then((value) => badges = value);
-    // Emote.getTwitchEmotes().then((value) => twitchEmotes = value);
-    // Emote.getThirdPartEmotes().then((value) => thirdPartEmotes = value);
-    // Emote.getTwitchCheerEmotes().then((value) => cheerEmotes = value);
+
+    TwitchApi.getTwitchUserChannelId(_username, _token, clientId!)
+        .then((value) {
+      _channelId = value;
+      Badge.getBadges(_token, _channelId!, clientId!)
+          .then((value) => badges = value);
+      TwitchApi.getTwitchGlobalEmotes(_token, clientId!)
+          .then((value) => emotes = value);
+      TwitchApi.getTwitchChannelEmotes(_token, _channelId!, clientId!)
+          .then((value) => emotes = value);
+      getThirdPartEmotes().then((value) => thirdPartEmotes = value);
+      TwitchApi.getCheerEmotes(_token, _channelId!, clientId!).then(
+        (value) => cheerEmotes = value,
+      );
+    });
   }
 
   //close websocket connection
@@ -282,12 +295,31 @@ class TwitchChat {
       }
       List<String> emoteSetsIds = messageMapped["emote-sets"]!.split(',');
       if (clientId != null) {
-        Emote.getTwitchSetsEmotes(_token, emoteSetsIds, clientId!).then((value) {
+        Emote.getTwitchSetsEmotes(_token, emoteSetsIds, clientId!)
+            .then((value) {
           for (var emote in value) {
             emotesFromSets.add(emote);
           }
         });
       }
     }
+  }
+
+  Future<List<Emote>> getThirdPartEmotes() async {
+    List<Emote> emotes = [];
+
+    await BttvApi.getGlobalEmotes().then((value) => {emotes.addAll(value)});
+
+    await BttvApi.getChannelEmotes(_channelId!)
+        .then((value) => {emotes.addAll(value)});
+
+    await FfzApi.getEmotes(_channelId!).then((value) => {emotes.addAll(value)});
+
+    await SeventvApi.getChannelEmotes(_channelId!)
+        .then((value) => {emotes.addAll(value)});
+
+    await SeventvApi.getGlobalEmotes().then((value) => {emotes.addAll(value)});
+
+    return emotes;
   }
 }
