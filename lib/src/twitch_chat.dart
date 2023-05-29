@@ -16,6 +16,7 @@ import 'emote.dart';
 
 class TwitchChat {
   String _channel;
+  String? _channelId;
   final String _username;
   final String _token;
 
@@ -26,23 +27,32 @@ class TwitchChat {
   List<ChatMessage> chatMessages = <ChatMessage>[];
   List<Badge> badges = [];
   List<Emote> emotes = [];
+  List<Emote> emotesFromSets = [];
   List<Emote> cheerEmotes = [];
   List<Emote> thirdPartEmotes = [];
 
   TwitchChat(this._channel, this._username, this._token, {this.params});
 
-  String get channel => _channel;
-
-  String get username => _username;
-
-  String get token => _token;
-
   IOWebSocketChannel get webSocket => webSocketChannel!;
-
   StreamSubscription get stream => streamSubscription!;
 
-  void setChannel(String channel) {
+  void changeChannel(String channel) {
+    webSocketChannel?.sink.add('PART #$_channel');
     _channel = channel;
+    webSocketChannel?.sink.add('JOIN #$channel');
+    getChannelId();
+  }
+
+  void getChannelId() {
+    badges.clear();
+    emotes.clear();
+    cheerEmotes.clear();
+    thirdPartEmotes.clear();
+    //TODO call twitch API to get channelId
+    Badge.getBadges(_token, _channelId!, '').then((value) => badges = value);
+    // Emote.getTwitchEmotes().then((value) => twitchEmotes = value);
+    // Emote.getThirdPartEmotes().then((value) => thirdPartEmotes = value);
+    // Emote.getTwitchCheerEmotes().then((value) => cheerEmotes = value);
   }
 
   //close websocket connection
@@ -62,10 +72,12 @@ class TwitchChat {
     webSocketChannel?.sink.add('CAP REQ :twitch.tv/membership');
     webSocketChannel?.sink.add('CAP REQ :twitch.tv/tags');
     webSocketChannel?.sink.add('CAP REQ :twitch.tv/commands');
-    webSocketChannel?.sink.add('PASS oauth:$token');
-    webSocketChannel?.sink.add('NICK $username');
+    webSocketChannel?.sink.add('PASS oauth:$_token');
+    webSocketChannel?.sink.add('NICK $_username');
 
-    webSocketChannel?.sink.add('JOIN #$channel');
+    webSocketChannel?.sink.add('JOIN #$_channel');
+
+    getChannelId();
   }
 
   void onDone() {}
@@ -266,10 +278,7 @@ class TwitchChat {
       //     .getTwitchSetsEmotes(twitchData!.accessToken, emoteSetsIds)
       //     .then((value) {
       //   for (var emote in value.data!) {
-      //     if (emotes.firstWhereOrNull((element) => element.id == emote.id) ==
-      //         null) {
-      //       emotes.add(emote);
-      //     }
+      //     emotesFromSets.add(emote);
       //   }
       // });
     }

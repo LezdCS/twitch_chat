@@ -47,10 +47,10 @@ class Subscription extends ChatMessage {
     final Map<String, String> messageMapped = {};
 
     List messageSplited = message.split(';');
-    messageSplited.forEach((element) {
+    for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
-    });
+    }
 
     String color = messageMapped['color']!;
     if (color == "") {
@@ -66,7 +66,7 @@ class Subscription extends ChatMessage {
 
     return Subscription(
       id: messageMapped['id'] as String,
-      badges: ChatMessage.getBadges(
+      badges: ChatMessage.parseBadges(
           messageMapped['badges'].toString(), twitchBadges),
       color: color,
       authorName: messageMapped['display-name'] as String,

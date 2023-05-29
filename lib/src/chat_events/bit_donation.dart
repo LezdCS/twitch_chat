@@ -41,10 +41,10 @@ class BitDonation extends ChatMessage {
     final Map<String, String> messageMapped = {};
 
     List messageSplited = message.split(';');
-    messageSplited.forEach((element) {
+    for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
-    });
+    }
 
     String color =
     ChatMessage.randomUsernameColor(messageMapped['display-name']!);
@@ -58,7 +58,7 @@ class BitDonation extends ChatMessage {
 
     return BitDonation(
       id: messageMapped['id'] as String,
-      badges: ChatMessage.getBadges(
+      badges: ChatMessage.parseBadges(
           messageMapped['badges'].toString(), twitchBadges),
       color: color,
       authorName: messageMapped['display-name'] as String,

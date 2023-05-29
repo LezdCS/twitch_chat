@@ -62,7 +62,7 @@ class SubGift extends ChatMessage {
 
     return SubGift(
       id: messageMapped['id'] as String,
-      badges: ChatMessage.getBadges(
+      badges: ChatMessage.parseBadges(
           messageMapped['badges'].toString(), twitchBadges),
       color: color,
       authorName: messageMapped['display-name'] as String,

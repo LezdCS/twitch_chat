@@ -62,7 +62,7 @@ class Announcement extends ChatMessage {
 
     return Announcement(
       id: messageMapped['id'] as String,
-      badges: ChatMessage.getBadges(
+      badges: ChatMessage.parseBadges(
           messageMapped['badges'].toString(), badges),
       color: color,
       authorName: messageMapped['display-name'] as String,

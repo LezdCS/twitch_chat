@@ -57,7 +57,7 @@ class ChatMessage {
     }
 
     List<Badge> badges =
-    getBadges(messageMapped['badges'].toString(), twitchBadges);
+    parseBadges(messageMapped['badges'].toString(), twitchBadges);
 
     String color = messageMapped['color']!;
     if (color == "") {
@@ -140,7 +140,7 @@ class ChatMessage {
     return emotesIdsPositions;
   }
 
-  static List<Badge> getBadges(
+  static List<Badge> parseBadges(
       String badgesString, List<Badge> twitchBadges) {
     List<Badge> badges = <Badge>[];
     List badgesSplited = badgesString.split(',');
