@@ -12,6 +12,7 @@ dependencies:
   web_socket_channel: ^2.4.0
   collection: any
   dio: ^5.1.2
+  quiver: ^3.2.1
 
 dev_dependencies:
   flutter_test:

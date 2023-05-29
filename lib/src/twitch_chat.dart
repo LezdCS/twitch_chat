@@ -34,6 +34,7 @@ class TwitchChat {
   TwitchChat(this._channel, this._username, this._token, {this.params});
 
   IOWebSocketChannel get webSocket => webSocketChannel!;
+
   StreamSubscription get stream => streamSubscription!;
 
   void changeChannel(String channel) {
@@ -274,13 +275,11 @@ class TwitchChat {
         messageMapped[elementSplited[0]] = elementSplited[1];
       }
       List<String> emoteSetsIds = messageMapped["emote-sets"]!.split(',');
-      // homeEvents
-      //     .getTwitchSetsEmotes(twitchData!.accessToken, emoteSetsIds)
-      //     .then((value) {
-      //   for (var emote in value.data!) {
-      //     emotesFromSets.add(emote);
-      //   }
-      // });
+      Emote.getTwitchSetsEmotes(_token, emoteSetsIds, '').then((value) {
+        for (var emote in value) {
+          emotesFromSets.add(emote);
+        }
+      });
     }
   }
 }
