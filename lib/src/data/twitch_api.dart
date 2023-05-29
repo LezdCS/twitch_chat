@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../chat_message.dart';
 import '../emote.dart';
 
 class TwitchApi {
-
-  static Future<List<Emote>> getTwitchGlobalEmotes(String token, String clientId) async {
+  static Future<List<Emote>> getTwitchGlobalEmotes(
+      String token, String clientId) async {
     Response response;
     var dio = Dio();
     List<Emote> emotes = <Emote>[];
@@ -13,14 +16,13 @@ class TwitchApi {
       dio.options.headers['Client-Id'] = clientId;
       dio.options.headers["authorization"] = "Bearer $token";
       response =
-      await dio.get('https://api.twitch.tv/helix/chat/emotes/global');
+          await dio.get('https://api.twitch.tv/helix/chat/emotes/global');
 
       response.data['data'].forEach(
-            (emote) => emotes.add(
+        (emote) => emotes.add(
           Emote.fromJson(emote),
         ),
       );
-
     } on DioError catch (e) {
       debugPrint(e.toString());
     }
@@ -28,10 +30,10 @@ class TwitchApi {
   }
 
   static Future<List<Emote>> getTwitchChannelEmotes(
-      String accessToken,
-      String broadcasterId,
-      String clientId,
-      ) async {
+    String accessToken,
+    String broadcasterId,
+    String clientId,
+  ) async {
     Response response;
     var dio = Dio();
     List<Emote> emotes = <Emote>[];
@@ -44,11 +46,10 @@ class TwitchApi {
       );
 
       response.data['data'].forEach(
-            (emote) => emotes.add(
+        (emote) => emotes.add(
           Emote.fromJson(emote),
         ),
       );
-
     } on DioError catch (e) {
       debugPrint(e.toString());
     }
@@ -56,10 +57,10 @@ class TwitchApi {
   }
 
   static Future<List<Emote>> getCheerEmotes(
-      String token,
-      String broadcasterId,
-      String clientId,
-      ) async {
+    String token,
+    String broadcasterId,
+    String clientId,
+  ) async {
     Response response;
     var dio = Dio();
     List<Emote> emotes = <Emote>[];
@@ -72,8 +73,8 @@ class TwitchApi {
       );
 
       response.data['data'].forEach(
-            (prefix) => prefix['tiers'].forEach(
-              (emote) => emotes.add(
+        (prefix) => prefix['tiers'].forEach(
+          (emote) => emotes.add(
             Emote.fromJsonCheerEmotes(emote, prefix['prefix']),
           ),
         ),
@@ -85,10 +86,10 @@ class TwitchApi {
   }
 
   static Future<String?> getTwitchUserChannelId(
-      String username,
-      String token,
-      String clientId,
-      ) async {
+    String username,
+    String token,
+    String clientId,
+  ) async {
     Response response;
     var dio = Dio();
     String? userChannelId;
@@ -109,4 +110,59 @@ class TwitchApi {
     return userChannelId;
   }
 
+  static Future<void> deleteMessage(
+    String token,
+    String channelId,
+    ChatMessage message,
+    String clientId,
+  ) async {
+    var dio = Dio();
+    try {
+      dio.options.headers['Client-Id'] = clientId;
+      dio.options.headers["authorization"] = "Bearer $token";
+      await dio.delete(
+        'https://api.twitch.tv/helix/moderation/chat',
+        queryParameters: {
+          'broadcaster_id': channelId,
+          'moderator_id': channelId,
+          'message_id': message.id,
+        },
+      );
+    } on DioError catch (e) {
+      debugPrint(e.response.toString());
+    }
+  }
+
+  static Future<void> banUser(
+      String token,
+      String broadcasterId,
+      ChatMessage message,
+      int? duration,
+      String clientId,
+      ) async {
+    var dio = Dio();
+    try {
+      dio.options.headers['Client-Id'] = clientId;
+      dio.options.headers["authorization"] = "Bearer $token";
+      Map body = {
+        "data": {
+          "user_id": message.authorId,
+        },
+      };
+      if (duration != null) {
+        body['data']['duration'] = duration.toString();
+      }
+
+      await dio.post(
+        'https://api.twitch.tv/helix/moderation/bans',
+        queryParameters: {
+          'broadcaster_id': broadcasterId,
+          'moderator_id': broadcasterId,
+        },
+        data: jsonEncode(body),
+      );
+    } on DioError catch (e) {
+      debugPrint(e.response.toString());
+    }
+  }
 }

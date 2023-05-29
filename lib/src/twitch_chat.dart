@@ -59,6 +59,18 @@ class TwitchChat {
   })  : _params = params,
         _clientId = clientId;
 
+  set onClearChat(Function? onClearChat) {
+    this.onClearChat = onClearChat;
+  }
+
+  set onDeletedMessageByUserId(Function? onDeletedMessageByUserId) {
+    this.onDeletedMessageByUserId = onDeletedMessageByUserId;
+  }
+
+  set onDeletedMessageByMessageId(Function? onDeletedMessageByMessageId) {
+    this.onDeletedMessageByMessageId = onDeletedMessageByMessageId;
+  }
+
   factory TwitchChat.anonymous(String channel) {
     return TwitchChat(channel, 'justinfan1243', '');
   }
