@@ -24,80 +24,76 @@ class TwitchChat {
   final String _username;
   final String _token;
 
-  String? clientId;
+  String? _clientId;
 
-  IOWebSocketChannel? webSocketChannel;
-  StreamSubscription? streamSubscription;
+  IOWebSocketChannel? _webSocketChannel;
+  StreamSubscription? _streamSubscription;
 
-  Parameters? params;
-  List<ChatMessage> chatMessages = <ChatMessage>[];
-  List<Badge> badges = [];
-  List<Emote> emotes = [];
-  List<Emote> emotesFromSets = [];
-  List<Emote> cheerEmotes = [];
-  List<Emote> thirdPartEmotes = [];
+  Parameters? _params;
+  List<ChatMessage> _chatMessages = <ChatMessage>[];
+  List<Badge> _badges = [];
+  List<Emote> _emotes = [];
+  List<Emote> _emotesFromSets = [];
+  List<Emote> _cheerEmotes = [];
+  List<Emote> _thirdPartEmotes = [];
 
   TwitchChat(this._channel, this._username, this._token,
-      {this.params, this.clientId});
-
-  IOWebSocketChannel get webSocket => webSocketChannel!;
-
-  StreamSubscription get stream => streamSubscription!;
+      {Parameters? params, String? clientId}) : _params = params, _clientId = clientId;
 
   void changeChannel(String channel) {
-    webSocketChannel?.sink.add('PART #$_channel');
+    _webSocketChannel?.sink.add('PART #$_channel');
     _channel = channel;
-    webSocketChannel?.sink.add('JOIN #$channel');
-    if (clientId != null) {
-      getChannelId();
+    _webSocketChannel?.sink.add('JOIN #$channel');
+    if (_clientId != null) {
+      _getChannelId();
     }
   }
 
-  void getChannelId() {
-    badges.clear();
-    emotes.clear();
-    cheerEmotes.clear();
-    thirdPartEmotes.clear();
+  void _getChannelId() {
+    _badges.clear();
+    _emotes.clear();
+    _cheerEmotes.clear();
+    _thirdPartEmotes.clear();
 
-    TwitchApi.getTwitchUserChannelId(_username, _token, clientId!)
+    TwitchApi.getTwitchUserChannelId(_username, _token, _clientId!)
         .then((value) {
       _channelId = value;
-      Badge.getBadges(_token, _channelId!, clientId!)
-          .then((value) => badges = value);
-      TwitchApi.getTwitchGlobalEmotes(_token, clientId!)
-          .then((value) => emotes = value);
-      TwitchApi.getTwitchChannelEmotes(_token, _channelId!, clientId!)
-          .then((value) => emotes = value);
-      getThirdPartEmotes().then((value) => thirdPartEmotes = value);
-      TwitchApi.getCheerEmotes(_token, _channelId!, clientId!).then(
-        (value) => cheerEmotes = value,
+      Badge.getBadges(_token, _channelId!, _clientId!)
+          .then((value) => _badges = value);
+      TwitchApi.getTwitchGlobalEmotes(_token, _clientId!)
+          .then((value) => _emotes = value);
+      TwitchApi.getTwitchChannelEmotes(_token, _channelId!, _clientId!)
+          .then((value) => _emotes = value);
+      _getThirdPartEmotes().then((value) => _thirdPartEmotes = value);
+      TwitchApi.getCheerEmotes(_token, _channelId!, _clientId!).then(
+        (value) => _cheerEmotes = value,
       );
     });
   }
 
   //close websocket connection
   void close() {
-    webSocketChannel?.sink.close();
-    streamSubscription?.cancel();
+    _webSocketChannel?.sink.close();
+    _streamSubscription?.cancel();
   }
 
   //login to twitch chat through websocket
-  void login() {
-    webSocketChannel =
+  void connect() {
+    _webSocketChannel =
         IOWebSocketChannel.connect("wss://irc-ws.chat.twitch.tv:443");
 
-    streamSubscription = webSocketChannel?.stream
+    _streamSubscription = _webSocketChannel?.stream
         .listen((data) => chatListener(data), onDone: onDone, onError: onError);
 
-    webSocketChannel?.sink.add('CAP REQ :twitch.tv/membership');
-    webSocketChannel?.sink.add('CAP REQ :twitch.tv/tags');
-    webSocketChannel?.sink.add('CAP REQ :twitch.tv/commands');
-    webSocketChannel?.sink.add('PASS oauth:$_token');
-    webSocketChannel?.sink.add('NICK $_username');
+    _webSocketChannel?.sink.add('CAP REQ :twitch.tv/membership');
+    _webSocketChannel?.sink.add('CAP REQ :twitch.tv/tags');
+    _webSocketChannel?.sink.add('CAP REQ :twitch.tv/commands');
+    _webSocketChannel?.sink.add('PASS oauth:$_token');
+    _webSocketChannel?.sink.add('NICK $_username');
 
-    webSocketChannel?.sink.add('JOIN #$_channel');
+    _webSocketChannel?.sink.add('JOIN #$_channel');
 
-    getChannelId();
+    _getChannelId();
   }
 
   void onDone() {}
@@ -106,7 +102,7 @@ class TwitchChat {
 
   void chatListener(String message) {
     if (message.startsWith('PING ')) {
-      webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
+      _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
     }
 
     if (message.startsWith('@')) {
@@ -133,40 +129,40 @@ class TwitchChat {
           case "PRIVMSG":
             {
               if (messageMapped['bits'] != null) {
-                if (params?.addBitsDonations != null &&
-                    !params!.addBitsDonations!) {
+                if (_params?.addBitsDonations != null &&
+                    !_params!.addBitsDonations!) {
                   return;
                 }
                 BitDonation bitDonation = BitDonation.fromString(
-                  twitchBadges: badges,
-                  cheerEmotes: cheerEmotes,
-                  thirdPartEmotes: thirdPartEmotes,
+                  twitchBadges: _badges,
+                  cheerEmotes: _cheerEmotes,
+                  thirdPartEmotes: _thirdPartEmotes,
                   message: message,
                 );
-                chatMessages.add(bitDonation);
+                _chatMessages.add(bitDonation);
                 break;
               }
               if (messageMapped["custom-reward-id"] != null) {
-                if (params?.addRewardsRedemptions != null &&
-                    !params!.addRewardsRedemptions!) {
+                if (_params?.addRewardsRedemptions != null &&
+                    !_params!.addRewardsRedemptions!) {
                   return;
                 }
                 RewardRedemption rewardRedemption = RewardRedemption.fromString(
-                  twitchBadges: badges,
-                  thirdPartEmotes: thirdPartEmotes,
-                  cheerEmotes: cheerEmotes,
+                  twitchBadges: _badges,
+                  thirdPartEmotes: _thirdPartEmotes,
+                  cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                chatMessages.add(rewardRedemption);
+                _chatMessages.add(rewardRedemption);
                 break;
               }
               ChatMessage chatMessage = ChatMessage.fromString(
-                twitchBadges: badges,
-                thirdPartEmotes: thirdPartEmotes,
-                cheerEmotes: cheerEmotes,
+                twitchBadges: _badges,
+                thirdPartEmotes: _thirdPartEmotes,
+                cheerEmotes: _cheerEmotes,
                 message: message,
               );
-              chatMessages.add(chatMessage);
+              _chatMessages.add(chatMessage);
             }
             break;
           case 'ROOMSTATE':
@@ -176,14 +172,14 @@ class TwitchChat {
               if (messageMapped['target-user-id'] != null) {
                 // @ban-duration=43;room-id=169185650;target-user-id=107285371;tmi-sent-ts=1642601142470 :tmi.twitch.tv CLEARCHAT #robcdee :lezd_
                 String userId = messageMapped['target-user-id']!;
-                for (var message in chatMessages) {
+                for (var message in _chatMessages) {
                   if (message.authorId == userId) {
                     message.isDeleted = true;
                   }
                 }
               } else {
                 //@room-id=107285371;tmi-sent-ts=1642256684032 :tmi.twitch.tv CLEARCHAT #lezd_
-                chatMessages.clear();
+                _chatMessages.clear();
               }
             }
             break;
@@ -193,7 +189,7 @@ class TwitchChat {
               // @login=lezd_;room-id=;target-msg-id=5ecb6458-198c-498c-b91b-16f1e12f58b4;tmi-sent-ts=1640717427981
               // :tmi.twitch.tv CLEARMSG #lezd_ :okokok
 
-              chatMessages
+              _chatMessages
                   .firstWhereOrNull((message) =>
                       message.id == messageMapped['target-msg-id'])!
                   .isDeleted = true;
@@ -218,68 +214,68 @@ class TwitchChat {
             String messageId = messageMapped['msg-id']!;
             switch (messageId) {
               case "announcement":
-                if (params?.addAnnouncements != null &&
-                    !params!.addAnnouncements!) {
+                if (_params?.addAnnouncements != null &&
+                    !_params!.addAnnouncements!) {
                   return;
                 }
                 Announcement announcement = Announcement.fromString(
-                  badges: badges,
-                  thirdPartEmotes: thirdPartEmotes,
-                  cheerEmotes: cheerEmotes,
+                  badges: _badges,
+                  thirdPartEmotes: _thirdPartEmotes,
+                  cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                chatMessages.add(announcement);
+                _chatMessages.add(announcement);
                 break;
               case "sub":
-                if (params?.addSubscriptions != null &&
-                    !params!.addSubscriptions!) {
+                if (_params?.addSubscriptions != null &&
+                    !_params!.addSubscriptions!) {
                   return;
                 }
                 Subscription subMessage = Subscription.fromString(
-                  twitchBadges: badges,
-                  thirdPartEmotes: thirdPartEmotes,
-                  cheerEmotes: cheerEmotes,
+                  twitchBadges: _badges,
+                  thirdPartEmotes: _thirdPartEmotes,
+                  cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                chatMessages.add(subMessage);
+                _chatMessages.add(subMessage);
                 break;
               case "resub":
-                if (params?.addSubscriptions != null &&
-                    !params!.addSubscriptions!) {
+                if (_params?.addSubscriptions != null &&
+                    !_params!.addSubscriptions!) {
                   return;
                 }
                 Subscription subMessage = Subscription.fromString(
-                  twitchBadges: badges,
-                  thirdPartEmotes: thirdPartEmotes,
-                  cheerEmotes: cheerEmotes,
+                  twitchBadges: _badges,
+                  thirdPartEmotes: _thirdPartEmotes,
+                  cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                chatMessages.add(subMessage);
+                _chatMessages.add(subMessage);
                 break;
               case "subgift":
-                if (params?.addSubscriptions != null &&
-                    !params!.addSubscriptions!) {
+                if (_params?.addSubscriptions != null &&
+                    !_params!.addSubscriptions!) {
                   return;
                 }
                 SubGift subGift = SubGift.fromString(
-                  twitchBadges: badges,
-                  thirdPartEmotes: thirdPartEmotes,
-                  cheerEmotes: cheerEmotes,
+                  twitchBadges: _badges,
+                  thirdPartEmotes: _thirdPartEmotes,
+                  cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                chatMessages.add(subGift);
+                _chatMessages.add(subGift);
                 break;
               case "raid":
-                if (params?.addRaids != null && !params!.addRaids!) {
+                if (_params?.addRaids != null && !_params!.addRaids!) {
                   return;
                 }
                 IncomingRaid raid = IncomingRaid.fromString(
-                  twitchBadges: badges,
-                  thirdPartEmotes: thirdPartEmotes,
-                  cheerEmotes: cheerEmotes,
+                  twitchBadges: _badges,
+                  thirdPartEmotes: _thirdPartEmotes,
+                  cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                chatMessages.add(raid);
+                _chatMessages.add(raid);
                 break;
               default:
                 break;
@@ -294,18 +290,18 @@ class TwitchChat {
         messageMapped[elementSplited[0]] = elementSplited[1];
       }
       List<String> emoteSetsIds = messageMapped["emote-sets"]!.split(',');
-      if (clientId != null) {
-        Emote.getTwitchSetsEmotes(_token, emoteSetsIds, clientId!)
+      if (_clientId != null) {
+        Emote.getTwitchSetsEmotes(_token, emoteSetsIds, _clientId!)
             .then((value) {
           for (var emote in value) {
-            emotesFromSets.add(emote);
+            _emotesFromSets.add(emote);
           }
         });
       }
     }
   }
 
-  Future<List<Emote>> getThirdPartEmotes() async {
+  Future<List<Emote>> _getThirdPartEmotes() async {
     List<Emote> emotes = [];
 
     await BttvApi.getGlobalEmotes().then((value) => {emotes.addAll(value)});
