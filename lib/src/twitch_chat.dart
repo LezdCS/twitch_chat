@@ -31,10 +31,14 @@ class TwitchChat {
   StreamSubscription? _streamSubscription;
 
   final StreamController _chatStreamController = StreamController.broadcast();
+
   Stream get chatStream => _chatStreamController.stream;
 
+  final Function? onClearChat;
+  final Function? onDeletedMessageByUserId;
+  final Function? onDeletedMessageByMessageId;
+
   Parameters? _params;
-  List<ChatMessage> _chatMessages = <ChatMessage>[];
   List<Badge> _badges = [];
   List<Emote> _emotes = [];
   List<Emote> _emotesFromSets = [];
@@ -43,9 +47,16 @@ class TwitchChat {
 
   bool isConnected = false;
 
-  TwitchChat(this._channel, this._username, this._token,
-      {Parameters? params, String? clientId})
-      : _params = params,
+  TwitchChat(
+    this._channel,
+    this._username,
+    this._token, {
+    Parameters? params,
+    String? clientId,
+    this.onClearChat,
+    this.onDeletedMessageByUserId,
+    this.onDeletedMessageByMessageId,
+  })  : _params = params,
         _clientId = clientId;
 
   factory TwitchChat.anonymous(String channel) {
@@ -100,8 +111,10 @@ class TwitchChat {
     _webSocketChannel =
         IOWebSocketChannel.connect("wss://irc-ws.chat.twitch.tv:443");
 
-    _streamSubscription = _webSocketChannel?.stream
-        .listen((data) => _chatListener(data), onDone: onDone, onError: onError);
+    _streamSubscription = _webSocketChannel?.stream.listen(
+        (data) => _chatListener(data),
+        onDone: onDone,
+        onError: onError);
 
     _webSocketChannel?.sink.add('CAP REQ :twitch.tv/membership');
     _webSocketChannel?.sink.add('CAP REQ :twitch.tv/tags');
@@ -168,7 +181,6 @@ class TwitchChat {
                   thirdPartEmotes: _thirdPartEmotes,
                   message: message,
                 );
-                _chatMessages.add(bitDonation);
                 _chatStreamController.add(bitDonation);
                 break;
               }
@@ -183,7 +195,6 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                _chatMessages.add(rewardRedemption);
                 _chatStreamController.add(rewardRedemption);
                 break;
               }
@@ -193,7 +204,6 @@ class TwitchChat {
                 cheerEmotes: _cheerEmotes,
                 message: message,
               );
-              _chatMessages.add(chatMessage);
               _chatStreamController.add(chatMessage);
             }
             break;
@@ -206,14 +216,14 @@ class TwitchChat {
               if (messageMapped['target-user-id'] != null) {
                 // @ban-duration=43;room-id=169185650;target-user-id=107285371;tmi-sent-ts=1642601142470 :tmi.twitch.tv CLEARCHAT #robcdee :lezd_
                 String userId = messageMapped['target-user-id']!;
-                for (var message in _chatMessages) {
-                  if (message.authorId == userId) {
-                    message.isDeleted = true;
-                  }
+                if (onDeletedMessageByUserId != null) {
+                  onDeletedMessageByUserId!(userId);
                 }
               } else {
                 //@room-id=107285371;tmi-sent-ts=1642256684032 :tmi.twitch.tv CLEARCHAT #lezd_
-                _chatMessages.clear();
+                if (onClearChat != null) {
+                  onClearChat!();
+                }
               }
             }
             break;
@@ -222,11 +232,9 @@ class TwitchChat {
               //clear a specific msg by the id
               // @login=lezd_;room-id=;target-msg-id=5ecb6458-198c-498c-b91b-16f1e12f58b4;tmi-sent-ts=1640717427981
               // :tmi.twitch.tv CLEARMSG #lezd_ :okokok
-
-              _chatMessages
-                  .firstWhereOrNull((message) =>
-                      message.id == messageMapped['target-msg-id'])!
-                  .isDeleted = true;
+              if (onDeletedMessageByMessageId != null) {
+                onDeletedMessageByMessageId!(messageMapped['target-msg-id']);
+              }
             }
             break;
           case "NOTICE":
@@ -258,7 +266,6 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                _chatMessages.add(announcement);
                 _chatStreamController.add(announcement);
                 break;
               case "sub":
@@ -272,7 +279,6 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                _chatMessages.add(subMessage);
                 _chatStreamController.add(subMessage);
                 break;
               case "resub":
@@ -286,7 +292,6 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                _chatMessages.add(subMessage);
                 _chatStreamController.add(subMessage);
                 break;
               case "subgift":
@@ -300,7 +305,6 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                _chatMessages.add(subGift);
                 _chatStreamController.add(subGift);
                 break;
               case "raid":
@@ -313,7 +317,6 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                 );
-                _chatMessages.add(raid);
                 _chatStreamController.add(raid);
                 break;
               default:
