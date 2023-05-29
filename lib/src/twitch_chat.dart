@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 import 'package:twitch_chat/src/data/ffz_api.dart';
@@ -37,8 +38,16 @@ class TwitchChat {
   List<Emote> _cheerEmotes = [];
   List<Emote> _thirdPartEmotes = [];
 
+  bool isConnected = false;
+
   TwitchChat(this._channel, this._username, this._token,
-      {Parameters? params, String? clientId}) : _params = params, _clientId = clientId;
+      {Parameters? params, String? clientId})
+      : _params = params,
+        _clientId = clientId;
+
+  factory TwitchChat.anonymous(String channel) {
+    return TwitchChat(channel, 'justinfan1243', '');
+  }
 
   void changeChannel(String channel) {
     _webSocketChannel?.sink.add('PART #$_channel');
@@ -71,8 +80,14 @@ class TwitchChat {
     });
   }
 
+  void quit() {
+    isConnected = false;
+    _webSocketChannel?.sink.add('PART #$_channel');
+  }
+
   //close websocket connection
   void close() {
+    isConnected = false;
     _webSocketChannel?.sink.close();
     _streamSubscription?.cancel();
   }
@@ -93,14 +108,25 @@ class TwitchChat {
 
     _webSocketChannel?.sink.add('JOIN #$_channel');
 
-    _getChannelId();
+    if (_clientId != null) {
+      _getChannelId();
+    }
   }
 
-  void onDone() {}
+  void onDone() {
+    debugPrint("done");
+    isConnected = false;
+  }
 
-  void onError(Object o, StackTrace s) {}
+  void onError(Object o, StackTrace s) {
+    isConnected = false;
+    debugPrint(o.toString());
+    debugPrint(s.toString());
+  }
 
   void chatListener(String message) {
+    debugPrint("Twitch Chat: $message");
+
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
     }
@@ -166,6 +192,8 @@ class TwitchChat {
             }
             break;
           case 'ROOMSTATE':
+            debugPrint("Twitch Chat: Connected to $_channel");
+            isConnected = true;
             break;
           case "CLEARCHAT":
             {
