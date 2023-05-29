@@ -30,6 +30,9 @@ class TwitchChat {
   IOWebSocketChannel? _webSocketChannel;
   StreamSubscription? _streamSubscription;
 
+  final StreamController _chatStreamController = StreamController.broadcast();
+  Stream get chatStream => _chatStreamController.stream;
+
   Parameters? _params;
   List<ChatMessage> _chatMessages = <ChatMessage>[];
   List<Badge> _badges = [];
@@ -98,7 +101,7 @@ class TwitchChat {
         IOWebSocketChannel.connect("wss://irc-ws.chat.twitch.tv:443");
 
     _streamSubscription = _webSocketChannel?.stream
-        .listen((data) => chatListener(data), onDone: onDone, onError: onError);
+        .listen((data) => _chatListener(data), onDone: onDone, onError: onError);
 
     _webSocketChannel?.sink.add('CAP REQ :twitch.tv/membership');
     _webSocketChannel?.sink.add('CAP REQ :twitch.tv/tags');
@@ -124,7 +127,7 @@ class TwitchChat {
     debugPrint(s.toString());
   }
 
-  void chatListener(String message) {
+  void _chatListener(String message) {
     debugPrint("Twitch Chat: $message");
 
     if (message.startsWith('PING ')) {
@@ -166,6 +169,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(bitDonation);
+                _chatStreamController.add(bitDonation);
                 break;
               }
               if (messageMapped["custom-reward-id"] != null) {
@@ -180,6 +184,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(rewardRedemption);
+                _chatStreamController.add(rewardRedemption);
                 break;
               }
               ChatMessage chatMessage = ChatMessage.fromString(
@@ -189,6 +194,7 @@ class TwitchChat {
                 message: message,
               );
               _chatMessages.add(chatMessage);
+              _chatStreamController.add(chatMessage);
             }
             break;
           case 'ROOMSTATE':
@@ -253,6 +259,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(announcement);
+                _chatStreamController.add(announcement);
                 break;
               case "sub":
                 if (_params?.addSubscriptions != null &&
@@ -266,6 +273,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(subMessage);
+                _chatStreamController.add(subMessage);
                 break;
               case "resub":
                 if (_params?.addSubscriptions != null &&
@@ -279,6 +287,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(subMessage);
+                _chatStreamController.add(subMessage);
                 break;
               case "subgift":
                 if (_params?.addSubscriptions != null &&
@@ -292,6 +301,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(subGift);
+                _chatStreamController.add(subGift);
                 break;
               case "raid":
                 if (_params?.addRaids != null && !_params!.addRaids!) {
@@ -304,6 +314,7 @@ class TwitchChat {
                   message: message,
                 );
                 _chatMessages.add(raid);
+                _chatStreamController.add(raid);
                 break;
               default:
                 break;
@@ -327,6 +338,10 @@ class TwitchChat {
         });
       }
     }
+  }
+
+  void sendMessage(String message) {
+    _webSocketChannel?.sink.add("PRIVMSG #$_channel :$message");
   }
 
   Future<List<Emote>> _getThirdPartEmotes() async {
