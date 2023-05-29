@@ -16,6 +16,16 @@ class Badge {
     required this.imageUrl4x,
   });
 
+  factory Badge.fromJson(String setId, Map<String, dynamic> map) {
+    return Badge(
+      setId: setId,
+      versionId: map['id'] as String,
+      imageUrl1x: map['image_url_1x'] as String,
+      imageUrl2x: map['image_url_2x'] as String,
+      imageUrl4x: map['image_url_4x'] as String,
+    );
+  }
+
   static Future<List<Badge>> getBadges(
     String token,
     String channelId,
@@ -30,18 +40,18 @@ class Badge {
       response =
           await dio.get('https://api.twitch.tv/helix/chat/badges/global');
 
-      // response.data['data'].forEach(
-      //   (set) => set['versions'].forEach((version) =>
-      //       badges.add(TwitchBadgeDTO.fromJson(set['set_id'], version))),
-      // );
+      response.data['data'].forEach(
+        (set) => set['versions'].forEach((version) =>
+            badges.add(Badge.fromJson(set['set_id'], version))),
+      );
 
       response = await dio.get(
           'https://api.twitch.tv/helix/chat/badges?broadcaster_id=$channelId');
 
-      // response.data['data'].forEach(
-      //       (set) => set['versions'].forEach((version) =>
-      //       badges.add(TwitchBadgeDTO.fromJson(set['set_id'], version))),
-      // );
+      response.data['data'].forEach(
+            (set) => set['versions'].forEach((version) =>
+            badges.add(Badge.fromJson(set['set_id'], version))),
+      );
     } on DioError catch (e) {
       debugPrint(e.toString());
     }
