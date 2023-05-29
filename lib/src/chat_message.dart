@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/badge.dart';
 import 'package:collection/collection.dart';
+
+import 'emote.dart';
 
 enum HighlightType {
   firstTimeChatter,
@@ -38,6 +41,67 @@ class ChatMessage {
     required this.isAction,
     required this.isDeleted,
   });
+
+  factory ChatMessage.fromString({
+    required List<Badge> twitchBadges,
+    required List<Emote> cheerEmotes,
+    required List<Emote> thirdPartEmotes,
+    required String message,
+  }) {
+    final Map<String, String> messageMapped = {};
+
+    List messageSplited = message.split(';');
+    for (var element in messageSplited) {
+      List elementSplited = element.split('=');
+      messageMapped[elementSplited[0]] = elementSplited[1];
+    }
+
+    List<Badge> badges =
+    getBadges(messageMapped['badges'].toString(), twitchBadges);
+
+    String color = messageMapped['color']!;
+    if (color == "") {
+      color = randomUsernameColor(messageMapped['display-name']!);
+    }
+
+    Map<String, List<List<String>>> emotesIdsPositions =
+    parseEmotes(messageMapped);
+
+    HighlightType? highlightType;
+    if (messageMapped["first-msg"] == "1") {
+      //TODO: use params from TwitchChat as condition
+      if (true) {
+        highlightType = HighlightType.firstTimeChatter;
+      }
+    }
+
+    //We get the message wrote by the user
+    List messageList = messageSplited.last.split(':').sublist(2);
+    String messageString = messageList.join(':');
+
+    //We check if the message is an action (/me)
+    bool isAction = messageString.startsWith("ACTION");
+    if (isAction) {
+      messageString = messageString
+          .replaceFirst("ACTION", '')
+          .replaceFirst("", '')
+          .trim();
+    }
+
+    return ChatMessage(
+      id: messageMapped['id'] as String,
+      badges: badges,
+      color: color,
+      authorName: messageMapped['display-name'] as String,
+      authorId: messageMapped['user-id'] as String,
+      emotes: emotesIdsPositions,
+      message: messageString,
+      timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
+      highlightType: highlightType,
+      isAction: isAction,
+      isDeleted: false,
+    );
+  }
 
   static Map<String, List<List<String>>> parseEmotes(
       Map<String, String> messageMapped) {
