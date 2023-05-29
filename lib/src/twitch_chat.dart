@@ -20,6 +20,8 @@ class TwitchChat {
   final String _username;
   final String _token;
 
+  String? clientId;
+
   IOWebSocketChannel? webSocketChannel;
   StreamSubscription? streamSubscription;
 
@@ -31,7 +33,8 @@ class TwitchChat {
   List<Emote> cheerEmotes = [];
   List<Emote> thirdPartEmotes = [];
 
-  TwitchChat(this._channel, this._username, this._token, {this.params});
+  TwitchChat(this._channel, this._username, this._token,
+      {this.params, this.clientId});
 
   IOWebSocketChannel get webSocket => webSocketChannel!;
 
@@ -41,7 +44,9 @@ class TwitchChat {
     webSocketChannel?.sink.add('PART #$_channel');
     _channel = channel;
     webSocketChannel?.sink.add('JOIN #$channel');
-    getChannelId();
+    if (clientId != null) {
+      getChannelId();
+    }
   }
 
   void getChannelId() {
@@ -50,7 +55,8 @@ class TwitchChat {
     cheerEmotes.clear();
     thirdPartEmotes.clear();
     //TODO call twitch API to get channelId
-    Badge.getBadges(_token, _channelId!, '').then((value) => badges = value);
+    Badge.getBadges(_token, _channelId!, clientId!)
+        .then((value) => badges = value);
     // Emote.getTwitchEmotes().then((value) => twitchEmotes = value);
     // Emote.getThirdPartEmotes().then((value) => thirdPartEmotes = value);
     // Emote.getTwitchCheerEmotes().then((value) => cheerEmotes = value);
@@ -275,11 +281,13 @@ class TwitchChat {
         messageMapped[elementSplited[0]] = elementSplited[1];
       }
       List<String> emoteSetsIds = messageMapped["emote-sets"]!.split(',');
-      Emote.getTwitchSetsEmotes(_token, emoteSetsIds, '').then((value) {
-        for (var emote in value) {
-          emotesFromSets.add(emote);
-        }
-      });
+      if (clientId != null) {
+        Emote.getTwitchSetsEmotes(_token, emoteSetsIds, clientId!).then((value) {
+          for (var emote in value) {
+            emotesFromSets.add(emote);
+          }
+        });
+      }
     }
   }
 }

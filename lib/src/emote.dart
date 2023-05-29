@@ -79,8 +79,8 @@ class Emote {
       id: map["id"].toString(),
       name: map["name"],
       url1x: map['urls']['1'],
-      url2x: map['urls']['2'] != null ? map['urls']['2'] : "",
-      url4x: map['urls']['4'] != null ? map['urls']['4'] : "",
+      url2x: map['urls']['2'] ?? "",
+      url4x: map['urls']['4'] ?? "",
       color: null,
       emoteType: EmoteType.thirdPart,
       isZeroWidth: false,
@@ -91,9 +91,9 @@ class Emote {
     return Emote(
       id: map["id"],
       name: map["code"],
-      url1x: "https://cdn.betterttv.net/emote/" + map['id'] + "/1x",
-      url2x: "https://cdn.betterttv.net/emote/" + map['id'] + "/2x",
-      url4x: "https://cdn.betterttv.net/emote/" + map['id'] + "/3x",
+      url1x: "https://cdn.betterttv.net/emote/${map['id']}/1x",
+      url2x: "https://cdn.betterttv.net/emote/${map['id']}/2x",
+      url4x: "https://cdn.betterttv.net/emote/${map['id']}/3x",
       color: null,
       emoteType: EmoteType.thirdPart,
       isZeroWidth: false,
@@ -117,14 +117,14 @@ class Emote {
   static Future<List<Emote>> getTwitchSetsEmotes(
     String token,
     List<String> setId,
-    String kTwitchAuthClientId,
+    String clientId,
   ) async {
     Response response;
     var dio = Dio();
     List<Emote> emotes = <Emote>[];
 
     try {
-      dio.options.headers['Client-Id'] = kTwitchAuthClientId;
+      dio.options.headers['Client-Id'] = clientId;
       dio.options.headers["authorization"] = "Bearer $token";
 
       var chunks = partition(setId, 25);
