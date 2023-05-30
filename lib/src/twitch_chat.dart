@@ -60,11 +60,17 @@ class TwitchChat {
         _clientId = clientId;
 
   get channel => _channel;
+
   get channelId => _channelId;
+
   get badges => _badges;
+
   get emotes => _emotes;
+
   get emotesFromSets => _emotesFromSets;
+
   get cheerEmotes => _cheerEmotes;
+
   get thirdPartEmotes => _thirdPartEmotes;
 
   set onClearChat(Function? onClearChat) {
@@ -128,7 +134,6 @@ class TwitchChat {
 
   //login to twitch chat through websocket
   void connect() {
-
     if (_streamSubscription != null) {
       debugPrint("Twitch Chat: Already connected");
       return;
@@ -173,6 +178,12 @@ class TwitchChat {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
     }
 
+    if (message.startsWith(':')) {
+      if (message.toLowerCase().contains('join #${_channel.toLowerCase()}')) {
+        isConnected = true;
+      }
+    }
+
     if (message.startsWith('@')) {
       List messageSplited = message.split(';');
       List<String> keys = [
@@ -185,7 +196,6 @@ class TwitchChat {
       ];
       String? keyResult =
           keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
-
       final Map<String, String> messageMapped = {};
       for (var element in messageSplited) {
         List elementSplited = element.split('=');
@@ -234,8 +244,6 @@ class TwitchChat {
             }
             break;
           case 'ROOMSTATE':
-            debugPrint("Twitch Chat: Connected to $_channel");
-            isConnected = true;
             break;
           case "CLEARCHAT":
             {
