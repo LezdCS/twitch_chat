@@ -171,6 +171,7 @@ class TwitchChat {
 
   void onDone() {
     debugPrint("Twitch Chat: Connection closed");
+    close();
     isConnected = false;
   }
 
