@@ -128,6 +128,12 @@ class TwitchChat {
 
   //login to twitch chat through websocket
   void connect() {
+
+    if (_streamSubscription != null) {
+      debugPrint("Twitch Chat: Already connected");
+      return;
+    }
+
     _webSocketChannel =
         IOWebSocketChannel.connect("wss://irc-ws.chat.twitch.tv:443");
 
