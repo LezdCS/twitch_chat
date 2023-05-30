@@ -60,6 +60,11 @@ class TwitchChat {
         _clientId = clientId;
 
   get channel => _channel;
+  get badges => _badges;
+  get emotes => _emotes;
+  get emotesFromSets => _emotesFromSets;
+  get cheerEmotes => _cheerEmotes;
+  get thirdPartEmotes => _thirdPartEmotes;
 
   set onClearChat(Function? onClearChat) {
     this.onClearChat = onClearChat;
