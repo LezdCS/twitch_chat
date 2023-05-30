@@ -37,6 +37,7 @@ class TwitchChat {
   final Function? onClearChat;
   final Function? onDeletedMessageByUserId;
   final Function? onDeletedMessageByMessageId;
+  final Function? onConnected;
 
   Parameters? _params;
   List<TwitchBadge> _badges = [];
@@ -56,6 +57,7 @@ class TwitchChat {
     this.onClearChat,
     this.onDeletedMessageByUserId,
     this.onDeletedMessageByMessageId,
+    this.onConnected,
   })  : _params = params,
         _clientId = clientId;
 
@@ -83,6 +85,10 @@ class TwitchChat {
 
   set onDeletedMessageByMessageId(Function? onDeletedMessageByMessageId) {
     this.onDeletedMessageByMessageId = onDeletedMessageByMessageId;
+  }
+
+  set onConnected(Function? onConnected) {
+    this.onConnected = onConnected;
   }
 
   factory TwitchChat.anonymous(String channel) {
@@ -181,6 +187,9 @@ class TwitchChat {
     if (message.startsWith(':')) {
       if (message.toLowerCase().contains('join #${_channel.toLowerCase()}')) {
         isConnected = true;
+        if(onConnected != null){
+          onConnected!();
+        }
       }
     }
 
