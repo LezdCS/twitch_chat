@@ -60,6 +60,7 @@ class TwitchChat {
         _clientId = clientId;
 
   get channel => _channel;
+  get channelId => _channelId;
   get badges => _badges;
   get emotes => _emotes;
   get emotesFromSets => _emotesFromSets;
