@@ -135,7 +135,10 @@ class TwitchChat {
   void close() {
     isConnected = false;
     _webSocketChannel?.sink.close();
+    _webSocketChannel?.stream.drain();
     _streamSubscription?.cancel();
+    _webSocketChannel = null;
+    _streamSubscription = null;
   }
 
   //login to twitch chat through websocket
@@ -187,7 +190,7 @@ class TwitchChat {
     if (message.startsWith(':')) {
       if (message.toLowerCase().contains('join #${_channel.toLowerCase()}')) {
         isConnected = true;
-        if(onConnected != null){
+        if (onConnected != null) {
           onConnected!();
         }
       }
