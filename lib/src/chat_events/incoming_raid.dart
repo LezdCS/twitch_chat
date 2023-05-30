@@ -1,4 +1,4 @@
-import 'package:twitch_chat/src/badge.dart';
+import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/emote.dart';
 import '../chat_message.dart';
 
@@ -37,7 +37,7 @@ class IncomingRaid extends ChatMessage {
         );
 
   factory IncomingRaid.fromString({
-    required List<Badge> twitchBadges,
+    required List<TwitchBadge> twitchBadges,
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,
@@ -52,7 +52,7 @@ class IncomingRaid extends ChatMessage {
 
     return IncomingRaid(
       id: messageMapped['id'] as String,
-      badges: <Badge>[],
+      badges: <TwitchBadge>[],
       color: "",
       authorName: messageMapped['display-name'] as String,
       authorId: messageMapped['user-id'] as String,

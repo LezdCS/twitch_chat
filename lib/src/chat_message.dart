@@ -1,4 +1,4 @@
-import 'package:twitch_chat/src/badge.dart';
+import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:collection/collection.dart';
 
 import 'emote.dart';
@@ -16,7 +16,7 @@ enum HighlightType {
 
 class ChatMessage {
   final String id;
-  final List<Badge> badges;
+  final List<TwitchBadge> badges;
   final String color;
   final String authorName;
   final String authorId;
@@ -44,7 +44,7 @@ class ChatMessage {
   });
 
   factory ChatMessage.fromString({
-    required List<Badge> twitchBadges,
+    required List<TwitchBadge> twitchBadges,
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,
@@ -57,7 +57,7 @@ class ChatMessage {
       messageMapped[elementSplited[0]] = elementSplited[1];
     }
 
-    List<Badge> badges =
+    List<TwitchBadge> badges =
     parseBadges(messageMapped['badges'].toString(), twitchBadges);
 
     String color = messageMapped['color']!;
@@ -142,13 +142,13 @@ class ChatMessage {
     return emotesIdsPositions;
   }
 
-  static List<Badge> parseBadges(
-      String badgesString, List<Badge> twitchBadges) {
-    List<Badge> badges = <Badge>[];
+  static List<TwitchBadge> parseBadges(
+      String badgesString, List<TwitchBadge> twitchBadges) {
+    List<TwitchBadge> badges = <TwitchBadge>[];
     List badgesSplited = badgesString.split(',');
     if (badgesSplited.isNotEmpty) {
       for (var i in badgesSplited) {
-        Badge? badgeFound = twitchBadges.firstWhereOrNull((badge) =>
+        TwitchBadge? badgeFound = twitchBadges.firstWhereOrNull((badge) =>
         badge.setId == i.split('/')[0] &&
             badge.versionId == i.split('/')[1]);
         if (badgeFound != null) {

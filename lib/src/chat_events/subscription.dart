@@ -1,4 +1,4 @@
-import 'package:twitch_chat/src/badge.dart';
+import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 
 import '../emote.dart';
@@ -40,7 +40,7 @@ class Subscription extends ChatMessage {
         );
 
   factory Subscription.fromString({
-    required List<Badge> twitchBadges,
+    required List<TwitchBadge> twitchBadges,
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,

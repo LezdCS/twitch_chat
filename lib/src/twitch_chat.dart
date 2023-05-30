@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:twitch_chat/src/badge.dart';
+import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 import 'package:twitch_chat/src/data/ffz_api.dart';
 import 'package:twitch_chat/src/data/seventv_api.dart';
@@ -39,7 +39,7 @@ class TwitchChat {
   final Function? onDeletedMessageByMessageId;
 
   Parameters? _params;
-  List<Badge> _badges = [];
+  List<TwitchBadge> _badges = [];
   List<Emote> _emotes = [];
   List<Emote> _emotesFromSets = [];
   List<Emote> _cheerEmotes = [];
@@ -101,7 +101,7 @@ class TwitchChat {
     TwitchApi.getTwitchUserChannelId(_username, _token, _clientId!)
         .then((value) {
       _channelId = value;
-      Badge.getBadges(_token, _channelId!, _clientId!)
+      TwitchBadge.getBadges(_token, _channelId!, _clientId!)
           .then((value) => _badges = value);
       TwitchApi.getTwitchGlobalEmotes(_token, _clientId!)
           .then((value) => _emotes = value);

@@ -1,4 +1,4 @@
-import 'package:twitch_chat/src/badge.dart';
+import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 
 import '../emote.dart';
@@ -36,7 +36,7 @@ class Announcement extends ChatMessage {
         );
 
   factory Announcement.fromString({
-    required List<Badge> badges,
+    required List<TwitchBadge> badges,
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,

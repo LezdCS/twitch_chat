@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
-class Badge {
+class TwitchBadge {
   final String setId;
   final String versionId;
   final String imageUrl1x;
   final String imageUrl2x;
   final String imageUrl4x;
 
-  const Badge({
+  const TwitchBadge({
     required this.setId,
     required this.versionId,
     required this.imageUrl1x,
@@ -16,8 +16,8 @@ class Badge {
     required this.imageUrl4x,
   });
 
-  factory Badge.fromJson(String setId, Map<String, dynamic> map) {
-    return Badge(
+  factory TwitchBadge.fromJson(String setId, Map<String, dynamic> map) {
+    return TwitchBadge(
       setId: setId,
       versionId: map['id'] as String,
       imageUrl1x: map['image_url_1x'] as String,
@@ -26,14 +26,14 @@ class Badge {
     );
   }
 
-  static Future<List<Badge>> getBadges(
+  static Future<List<TwitchBadge>> getBadges(
     String token,
     String channelId,
     String kTwitchAuthClientId,
   ) async {
     Response response;
     var dio = Dio();
-    List<Badge> badges = <Badge>[];
+    List<TwitchBadge> badges = <TwitchBadge>[];
     try {
       dio.options.headers['Client-Id'] = kTwitchAuthClientId;
       dio.options.headers["authorization"] = "Bearer $token";
@@ -42,7 +42,7 @@ class Badge {
 
       response.data['data'].forEach(
         (set) => set['versions'].forEach((version) =>
-            badges.add(Badge.fromJson(set['set_id'], version))),
+            badges.add(TwitchBadge.fromJson(set['set_id'], version))),
       );
 
       response = await dio.get(
@@ -50,7 +50,7 @@ class Badge {
 
       response.data['data'].forEach(
             (set) => set['versions'].forEach((version) =>
-            badges.add(Badge.fromJson(set['set_id'], version))),
+            badges.add(TwitchBadge.fromJson(set['set_id'], version))),
       );
     } on DioError catch (e) {
       debugPrint(e.toString());
