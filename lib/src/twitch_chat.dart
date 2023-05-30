@@ -142,7 +142,7 @@ class TwitchChat {
   }
 
   void onDone() {
-    debugPrint("done");
+    debugPrint("Twitch Chat: Connection closed");
     isConnected = false;
   }
 
@@ -347,9 +347,7 @@ class TwitchChat {
       if (_clientId != null) {
         Emote.getTwitchSetsEmotes(_token, emoteSetsIds, _clientId!)
             .then((value) {
-          for (var emote in value) {
-            _emotesFromSets.add(emote);
-          }
+          _emotesFromSets = value;
         });
       }
     }

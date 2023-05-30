@@ -17,20 +17,22 @@ class BitDonation extends ChatMessage {
     required highlightType,
     required isAction,
     required isDeleted,
+    required rawData,
     required this.totalBits,
   }) : super(
-    id: id,
-    badges: badges,
-    color: color,
-    authorName: authorName,
-    authorId: authorId,
-    emotes: emotes,
-    message: message,
-    timestamp: timestamp,
-    highlightType: highlightType,
-    isAction: isAction,
-    isDeleted: isDeleted,
-  );
+          id: id,
+          badges: badges,
+          color: color,
+          authorName: authorName,
+          authorId: authorId,
+          emotes: emotes,
+          message: message,
+          timestamp: timestamp,
+          highlightType: highlightType,
+          isAction: isAction,
+          isDeleted: isDeleted,
+          rawData: rawData,
+        );
 
   factory BitDonation.fromString({
     required List<Badge> twitchBadges,
@@ -47,14 +49,13 @@ class BitDonation extends ChatMessage {
     }
 
     String color =
-    ChatMessage.randomUsernameColor(messageMapped['display-name']!);
+        ChatMessage.randomUsernameColor(messageMapped['display-name']!);
 
     Map<String, List<List<String>>> emotesIdsPositions =
-    ChatMessage.parseEmotes(messageMapped);
+        ChatMessage.parseEmotes(messageMapped);
 
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
-
 
     return BitDonation(
       id: messageMapped['id'] as String,
@@ -69,8 +70,9 @@ class BitDonation extends ChatMessage {
       highlightType: HighlightType.bitDonation,
       isAction: false,
       isDeleted: false,
+      rawData: message,
       totalBits:
-      messageMapped['bits'] == null ? 0 : int.parse(messageMapped['bits']!),
+          messageMapped['bits'] == null ? 0 : int.parse(messageMapped['bits']!),
     );
   }
 }

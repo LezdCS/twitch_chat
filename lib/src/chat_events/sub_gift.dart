@@ -20,22 +20,24 @@ class SubGift extends ChatMessage {
     required highlightType,
     required isAction,
     required isDeleted,
+    required rawData,
     required this.tier,
     required this.giftedName,
     required this.systemMessage,
   }) : super(
-    id: id,
-    badges: badges,
-    color: color,
-    authorName: authorName,
-    authorId: authorId,
-    emotes: emotes,
-    message: message,
-    timestamp: timestamp,
-    highlightType: highlightType,
-    isAction: isAction,
-    isDeleted: isDeleted,
-  );
+          id: id,
+          badges: badges,
+          color: color,
+          authorName: authorName,
+          authorId: authorId,
+          emotes: emotes,
+          message: message,
+          timestamp: timestamp,
+          highlightType: highlightType,
+          isAction: isAction,
+          isDeleted: isDeleted,
+          rawData: rawData,
+        );
 
   factory SubGift.fromString({
     required List<Badge> twitchBadges,
@@ -52,10 +54,10 @@ class SubGift extends ChatMessage {
     });
 
     String color =
-    ChatMessage.randomUsernameColor(messageMapped['display-name']!);
+        ChatMessage.randomUsernameColor(messageMapped['display-name']!);
 
     Map<String, List<List<String>>> emotesIdsPositions =
-    ChatMessage.parseEmotes(messageMapped);
+        ChatMessage.parseEmotes(messageMapped);
 
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
@@ -73,6 +75,7 @@ class SubGift extends ChatMessage {
       highlightType: HighlightType.subscriptionGifted,
       isAction: false,
       isDeleted: false,
+      rawData: message,
       tier: messageMapped["msg-param-sub-plan"] as String,
       giftedName: messageMapped["msg-param-recipient-display-name"] as String,
       systemMessage: messageMapped["system-msg"] as String,

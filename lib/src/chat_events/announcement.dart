@@ -19,20 +19,22 @@ class Announcement extends ChatMessage {
     required highlightType,
     required isAction,
     required isDeleted,
+    required rawData,
     required this.announcementColor,
   }) : super(
-    id: id,
-    badges: badges,
-    color: color,
-    authorName: authorName,
-    authorId: authorId,
-    emotes: emotes,
-    message: message,
-    timestamp: timestamp,
-    highlightType: highlightType,
-    isAction: isAction,
-    isDeleted: isDeleted,
-  );
+          id: id,
+          badges: badges,
+          color: color,
+          authorName: authorName,
+          authorId: authorId,
+          emotes: emotes,
+          message: message,
+          timestamp: timestamp,
+          highlightType: highlightType,
+          isAction: isAction,
+          isDeleted: isDeleted,
+          rawData: rawData,
+        );
 
   factory Announcement.fromString({
     required List<Badge> badges,
@@ -50,20 +52,19 @@ class Announcement extends ChatMessage {
 
     String color = messageMapped['color']!;
     if (color == "") {
-      color =
-          ChatMessage.randomUsernameColor(messageMapped['display-name']!);
+      color = ChatMessage.randomUsernameColor(messageMapped['display-name']!);
     }
 
     Map<String, List<List<String>>> emotesIdsPositions =
-    ChatMessage.parseEmotes(messageMapped);
+        ChatMessage.parseEmotes(messageMapped);
 
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
 
     return Announcement(
       id: messageMapped['id'] as String,
-      badges: ChatMessage.parseBadges(
-          messageMapped['badges'].toString(), badges),
+      badges:
+          ChatMessage.parseBadges(messageMapped['badges'].toString(), badges),
       color: color,
       authorName: messageMapped['display-name'] as String,
       authorId: messageMapped['user-id'] as String,
@@ -73,6 +74,7 @@ class Announcement extends ChatMessage {
       highlightType: HighlightType.announcement,
       isAction: false,
       isDeleted: false,
+      rawData: message,
       announcementColor: messageMapped["msg-param-color"] as String,
     );
   }

@@ -21,22 +21,24 @@ class Subscription extends ChatMessage {
     required highlightType,
     required isAction,
     required isDeleted,
+    required rawData,
     required this.tier,
     required this.months,
     required this.isGift,
   }) : super(
-    id: id,
-    badges: badges,
-    color: color,
-    authorName: authorName,
-    authorId: authorId,
-    emotes: emotes,
-    message: message,
-    timestamp: timestamp,
-    highlightType: highlightType,
-    isAction: isAction,
-    isDeleted: isDeleted,
-  );
+          id: id,
+          badges: badges,
+          color: color,
+          authorName: authorName,
+          authorId: authorId,
+          emotes: emotes,
+          message: message,
+          timestamp: timestamp,
+          highlightType: highlightType,
+          isAction: isAction,
+          isDeleted: isDeleted,
+          rawData: rawData,
+        );
 
   factory Subscription.fromString({
     required List<Badge> twitchBadges,
@@ -54,12 +56,11 @@ class Subscription extends ChatMessage {
 
     String color = messageMapped['color']!;
     if (color == "") {
-      color =
-          ChatMessage.randomUsernameColor(messageMapped['display-name']!);
+      color = ChatMessage.randomUsernameColor(messageMapped['display-name']!);
     }
 
     Map<String, List<List<String>>> emotesIdsPositions =
-    ChatMessage.parseEmotes(messageMapped);
+        ChatMessage.parseEmotes(messageMapped);
 
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
@@ -77,6 +78,7 @@ class Subscription extends ChatMessage {
       highlightType: HighlightType.subscription,
       isAction: false,
       isDeleted: false,
+      rawData: message,
       tier: messageMapped["msg-param-sub-plan"] as String,
       months: messageMapped["msg-param-cumulative-months"] as String,
       isGift: messageMapped["msg-param-was-gifted"] == "true",

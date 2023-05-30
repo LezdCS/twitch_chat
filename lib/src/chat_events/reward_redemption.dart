@@ -19,20 +19,22 @@ class RewardRedemption extends ChatMessage {
     required highlightType,
     required isAction,
     required isDeleted,
+    required rawData,
     required this.rewardId,
   }) : super(
-    id: id,
-    badges: badges,
-    color: color,
-    authorName: authorName,
-    authorId: authorId,
-    emotes: emotes,
-    message: message,
-    timestamp: timestamp,
-    highlightType: highlightType,
-    isAction: isAction,
-    isDeleted: isDeleted,
-  );
+          id: id,
+          badges: badges,
+          color: color,
+          authorName: authorName,
+          authorId: authorId,
+          emotes: emotes,
+          message: message,
+          timestamp: timestamp,
+          highlightType: highlightType,
+          isAction: isAction,
+          isDeleted: isDeleted,
+          rawData: rawData,
+        );
 
   factory RewardRedemption.fromString({
     required List<Badge> twitchBadges,
@@ -50,12 +52,11 @@ class RewardRedemption extends ChatMessage {
 
     String color = messageMapped['color']!;
     if (color == "") {
-      color =
-          ChatMessage.randomUsernameColor(messageMapped['display-name']!);
+      color = ChatMessage.randomUsernameColor(messageMapped['display-name']!);
     }
 
     Map<String, List<List<String>>> emotesIdsPositions =
-    ChatMessage.parseEmotes(messageMapped);
+        ChatMessage.parseEmotes(messageMapped);
 
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
@@ -73,6 +74,7 @@ class RewardRedemption extends ChatMessage {
       highlightType: HighlightType.channelPointRedemption,
       isAction: false,
       isDeleted: false,
+      rawData: message,
       rewardId: messageMapped['custom-reward-id'] as String,
     );
   }

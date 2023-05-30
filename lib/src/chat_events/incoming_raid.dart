@@ -19,21 +19,23 @@ class IncomingRaid extends ChatMessage {
     required highlightType,
     required isAction,
     required isDeleted,
+    required rawData,
     required this.viewerCount,
     required this.raidingChannelName,
   }) : super(
-    id: id,
-    badges: badges,
-    color: color,
-    authorName: authorName,
-    authorId: authorId,
-    emotes: emotes,
-    message: message,
-    timestamp: timestamp,
-    highlightType: highlightType,
-    isAction: isAction,
-    isDeleted: isDeleted,
-  );
+          id: id,
+          badges: badges,
+          color: color,
+          authorName: authorName,
+          authorId: authorId,
+          emotes: emotes,
+          message: message,
+          timestamp: timestamp,
+          highlightType: highlightType,
+          isAction: isAction,
+          isDeleted: isDeleted,
+          rawData: rawData,
+        );
 
   factory IncomingRaid.fromString({
     required List<Badge> twitchBadges,
@@ -61,6 +63,7 @@ class IncomingRaid extends ChatMessage {
       highlightType: HighlightType.incomingRaid,
       isAction: false,
       isDeleted: false,
+      rawData: message,
       viewerCount: int.parse(messageMapped['msg-param-viewerCount'] as String),
       raidingChannelName: messageMapped['msg-param-displayName'] as String,
     );

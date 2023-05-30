@@ -27,6 +27,7 @@ class ChatMessage {
   final HighlightType? highlightType;
   final bool isAction;
   bool isDeleted;
+  String rawData;
 
   ChatMessage({
     required this.id,
@@ -40,6 +41,7 @@ class ChatMessage {
     required this.highlightType,
     required this.isAction,
     required this.isDeleted,
+    required this.rawData,
   });
 
   factory ChatMessage.fromString({
@@ -100,6 +102,7 @@ class ChatMessage {
       highlightType: highlightType,
       isAction: isAction,
       isDeleted: false,
+      rawData: message,
     );
   }
 
