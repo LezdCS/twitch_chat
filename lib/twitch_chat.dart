@@ -3,6 +3,9 @@ library twitch_chat;
 export 'src/twitch_chat.dart';
 
 export 'src/chat_message.dart';
+export 'src/emote.dart';
+export 'src/badge.dart';
+
 export 'src/chat_events/announcement.dart';
 export 'src/chat_events/bit_donation.dart';
 export 'src/chat_events/incoming_raid.dart';
