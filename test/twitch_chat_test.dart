@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twitch_chat/src/chat_message.dart';
@@ -10,7 +8,7 @@ void main() {
   const token = "";
   const clientId = "";
 
-  test('connect anonymously to the websocket', () async {
+  test('connect anonymously to a chat', () async {
     TwitchChat chat = TwitchChat.anonymous(
       "Lezd_",
     );
@@ -22,7 +20,7 @@ void main() {
     chat.close();
   });
 
-  test('connect to the websocket', () async {
+  test('connect to a chat', () async {
     TwitchChat chat = TwitchChat(
       "Lezd_",
       "Lezd_",
@@ -31,6 +29,21 @@ void main() {
     );
 
     chat.connect();
+    await Future.delayed(const Duration(seconds: 8), () {});
+    expectLater(chat.isConnected, true);
+    chat.quit();
+    chat.close();
+  });
+
+  test('switch to another chat', () async {
+    TwitchChat chat = TwitchChat.anonymous(
+      "Lezd_",
+    );
+
+    chat.connect();
+    await Future.delayed(const Duration(seconds: 8), () {});
+    expectLater(chat.isConnected, true);
+    chat.changeChannel("xqc");
     await Future.delayed(const Duration(seconds: 8), () {});
     expectLater(chat.isConnected, true);
     chat.quit();
@@ -165,7 +178,7 @@ void main() {
 
     await Future.delayed(const Duration(seconds: 8), () {});
     expect(messageDeleted.isDeleted, true);
-    
+
     chat.quit();
     chat.close();
   });
