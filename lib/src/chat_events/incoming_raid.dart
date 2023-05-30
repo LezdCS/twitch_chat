@@ -67,4 +67,23 @@ class IncomingRaid extends ChatMessage {
       raidingChannelName: messageMapped['msg-param-displayName'] as String,
     );
   }
+
+  factory IncomingRaid.randomGeneration() {
+    return IncomingRaid(
+      id: '123456789',
+      badges: <TwitchBadge>[],
+      color: ChatMessage.randomUsernameColor('Lezd'),
+      authorName: 'Lezd',
+      authorId: '123456789',
+      emotes: <String, List<dynamic>>{},
+      message: '',
+      timestamp: 123456789,
+      highlightType: HighlightType.incomingRaid,
+      isAction: false,
+      isDeleted: false,
+      viewerCount: 123,
+      raidingChannelName: 'Lezd_',
+      rawData: '',
+    );
+  }
 }

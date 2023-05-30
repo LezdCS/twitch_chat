@@ -13,6 +13,8 @@ dependencies:
   collection: any
   dio: ^5.1.2
   quiver: ^3.2.1
+  faker: ^2.1.0
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

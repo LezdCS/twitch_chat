@@ -1,5 +1,7 @@
+import 'package:faker/faker.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:collection/collection.dart';
+import 'package:uuid/uuid.dart';
 
 import 'emote.dart';
 
@@ -58,7 +60,7 @@ class ChatMessage {
     }
 
     List<TwitchBadge> badges =
-    parseBadges(messageMapped['badges'].toString(), twitchBadges);
+        parseBadges(messageMapped['badges'].toString(), twitchBadges);
 
     String color = messageMapped['color']!;
     if (color == "") {
@@ -66,7 +68,7 @@ class ChatMessage {
     }
 
     Map<String, List<List<String>>> emotesIdsPositions =
-    parseEmotes(messageMapped);
+        parseEmotes(messageMapped);
 
     HighlightType? highlightType;
     if (messageMapped["first-msg"] == "1") {
@@ -149,7 +151,7 @@ class ChatMessage {
     if (badgesSplited.isNotEmpty) {
       for (var i in badgesSplited) {
         TwitchBadge? badgeFound = twitchBadges.firstWhereOrNull((badge) =>
-        badge.setId == i.split('/')[0] &&
+            badge.setId == i.split('/')[0] &&
             badge.versionId == i.split('/')[1]);
         if (badgeFound != null) {
           badges.add(badgeFound);
@@ -180,5 +182,29 @@ class ChatMessage {
 
     var n = username.codeUnitAt(0) + username.codeUnitAt(username.length - 1);
     return defaultColors[n % defaultColors.length][1];
+  }
+
+  factory ChatMessage.randomGeneration(
+      HighlightType? highlightType, String? message, String? u) {
+    Uuid uuid = const Uuid();
+    String username = u ?? faker.internet.userName();
+    String color = randomUsernameColor(username);
+
+    return ChatMessage(
+      id: uuid.v4(),
+      badges: [],
+      color: color,
+      authorName: username,
+      authorId: uuid.v4(),
+      emotes: {},
+      message: message ?? faker.lorem.sentence(),
+      timestamp: faker.date
+          .dateTime(minYear: 2000, maxYear: 2020)
+          .microsecondsSinceEpoch,
+      highlightType: highlightType,
+      isAction: false,
+      isDeleted: false,
+      rawData: '',
+    );
   }
 }

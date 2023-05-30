@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 
@@ -75,6 +76,37 @@ class RewardRedemption extends ChatMessage {
       isDeleted: false,
       rawData: message,
       rewardId: messageMapped['custom-reward-id'] as String,
+    );
+  }
+
+  factory RewardRedemption.randomGeneration() {
+    String message = "Finally got my 10000 points reward!";
+    List badges = <TwitchBadge>[
+      const TwitchBadge(
+        setId: 'sub-gifter',
+        versionId: '1',
+        imageUrl1x:
+            'https://static-cdn.jtvnw.net/badges/v1/a5ef6c17-2e5b-4d8f-9b80-2779fd722414/1',
+        imageUrl2x:
+            'https://static-cdn.jtvnw.net/badges/v1/a5ef6c17-2e5b-4d8f-9b80-2779fd722414/2',
+        imageUrl4x:
+            'https://static-cdn.jtvnw.net/badges/v1/a5ef6c17-2e5b-4d8f-9b80-2779fd722414/3',
+      ),
+    ];
+    return RewardRedemption(
+      id: '123456789',
+      badges: badges,
+      color: ChatMessage.randomUsernameColor('Lezd'),
+      authorName: 'Lezd',
+      authorId: '123456789',
+      emotes: <String, List<dynamic>>{},
+      message: message,
+      timestamp: 123456789,
+      highlightType: HighlightType.channelPointRedemption,
+      isAction: false,
+      isDeleted: false,
+      rewardId: '123456789',
+      rawData: '',
     );
   }
 }
