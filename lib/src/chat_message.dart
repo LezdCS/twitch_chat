@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/badge.dart';
 import 'package:collection/collection.dart';
 

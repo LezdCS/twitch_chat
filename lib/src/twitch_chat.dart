@@ -59,6 +59,8 @@ class TwitchChat {
   })  : _params = params,
         _clientId = clientId;
 
+  get channel => _channel;
+
   set onClearChat(Function? onClearChat) {
     this.onClearChat = onClearChat;
   }
