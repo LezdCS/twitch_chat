@@ -135,9 +135,7 @@ class TwitchChat {
   void close() {
     isConnected = false;
     _webSocketChannel?.sink.close();
-    _webSocketChannel?.stream.drain();
     _streamSubscription?.cancel();
-    _webSocketChannel = null;
     _streamSubscription = null;
   }
 
