@@ -59,8 +59,10 @@ class ChatMessage {
       messageMapped[elementSplited[0]] = elementSplited[1];
     }
 
-    List<TwitchBadge> badges =
-        parseBadges(messageMapped['badges'].toString(), twitchBadges);
+    List<TwitchBadge> badges = parseBadges(
+      messageMapped['badges'].toString(),
+      twitchBadges,
+    );
 
     String color = messageMapped['color']!;
     if (color == "") {
@@ -108,7 +110,8 @@ class ChatMessage {
   }
 
   static Map<String, List<List<String>>> parseEmotes(
-      Map<String, String> messageMapped) {
+    Map<String, String> messageMapped,
+  ) {
     Map<String, List<List<String>>> emotesIdsPositions = {};
 
     List<String> tempEmoteList = [];
@@ -145,7 +148,9 @@ class ChatMessage {
   }
 
   static List<TwitchBadge> parseBadges(
-      String badgesString, List<TwitchBadge> twitchBadges) {
+    String badgesString,
+    List<TwitchBadge> twitchBadges,
+  ) {
     List<TwitchBadge> badges = <TwitchBadge>[];
     List badgesSplited = badgesString.split(',');
     if (badgesSplited.isNotEmpty) {

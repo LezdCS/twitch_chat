@@ -125,7 +125,7 @@ class TwitchChat {
     _cheerEmotes.clear();
     _thirdPartEmotes.clear();
 
-    TwitchApi.getTwitchUserChannelId(_username, _token, _clientId!)
+    TwitchApi.getTwitchUserChannelId(_channel, _token, _clientId!)
         .then((value) {
       _channelId = value;
       TwitchBadge.getBadges(_token, _channelId!, _clientId!)
