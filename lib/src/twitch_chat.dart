@@ -38,6 +38,8 @@ class TwitchChat {
   final Function? onDeletedMessageByUserId;
   final Function? onDeletedMessageByMessageId;
   final Function? onConnected;
+  final Function()? onDone;
+  final Function? onError;
 
   Parameters? _params;
   List<TwitchBadge> _badges = [];
@@ -46,7 +48,8 @@ class TwitchChat {
   List<Emote> _cheerEmotes = [];
   List<Emote> _thirdPartEmotes = [];
 
-  bool isConnected = false;
+  ValueNotifier<bool> isConnected = ValueNotifier<bool>(false);
+  bool? _allowDebug = false;
 
   TwitchChat(
     this._channel,
@@ -58,8 +61,12 @@ class TwitchChat {
     this.onDeletedMessageByUserId,
     this.onDeletedMessageByMessageId,
     this.onConnected,
+    this.onDone,
+    this.onError,
+    bool? allowDebug,
   })  : _params = params,
-        _clientId = clientId;
+        _clientId = clientId,
+        _allowDebug = allowDebug;
 
   get channel => _channel;
 
@@ -89,6 +96,14 @@ class TwitchChat {
 
   set onConnected(Function? onConnected) {
     this.onConnected = onConnected;
+  }
+
+  set onDone(Function? onDone) {
+    this.onDone = onDone;
+  }
+
+  set onError(Function? onError) {
+    this.onError = onError;
   }
 
   factory TwitchChat.anonymous(String channel) {
@@ -127,13 +142,13 @@ class TwitchChat {
   }
 
   void quit() {
-    isConnected = false;
+    isConnected.value = false;
     _webSocketChannel?.sink.add('PART #$_channel');
   }
 
   //close websocket connection
   void close() {
-    isConnected = false;
+    isConnected.value = false;
     _webSocketChannel?.sink.close();
     _streamSubscription?.cancel();
     _streamSubscription = null;
@@ -150,9 +165,10 @@ class TwitchChat {
         IOWebSocketChannel.connect("wss://irc-ws.chat.twitch.tv:443");
 
     _streamSubscription = _webSocketChannel?.stream.listen(
-        (data) => _chatListener(data),
-        onDone: onDone,
-        onError: onError);
+      (data) => _chatListener(data),
+      onDone: _onDone,
+      onError: _onError,
+    );
 
     _webSocketChannel?.sink.add('CAP REQ :twitch.tv/membership');
     _webSocketChannel?.sink.add('CAP REQ :twitch.tv/tags');
@@ -167,20 +183,26 @@ class TwitchChat {
     }
   }
 
-  void onDone() {
+  void _onDone() {
     debugPrint("Twitch Chat: Connection closed");
     close();
-    isConnected = false;
+    isConnected.value = false;
+    if (onDone != null) {
+      onDone!();
+    }
   }
 
-  void onError(Object o, StackTrace s) {
-    isConnected = false;
+  void _onError(Object o, StackTrace s) {
+    isConnected.value = false;
     debugPrint(o.toString());
     debugPrint(s.toString());
+    if (onError != null) {
+      onError!();
+    }
   }
 
   void _chatListener(String message) {
-    debugPrint("Twitch Chat: $message");
+    // debugPrint("Twitch Chat: $message");
 
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
@@ -188,7 +210,7 @@ class TwitchChat {
 
     if (message.startsWith(':')) {
       if (message.toLowerCase().contains('join #${_channel.toLowerCase()}')) {
-        isConnected = true;
+        isConnected.value = true;
         if (onConnected != null) {
           onConnected!();
         }
