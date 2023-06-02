@@ -1,6 +1,7 @@
 import 'package:faker/faker.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:collection/collection.dart';
+import 'package:twitch_chat/src/twitch_chat_parameters.dart';
 import 'package:uuid/uuid.dart';
 
 import 'emote.dart';
@@ -50,6 +51,7 @@ class ChatMessage {
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,
+    TwitchChatParameters? params,
   }) {
     final Map<String, String> messageMapped = {};
 
@@ -74,8 +76,7 @@ class ChatMessage {
 
     HighlightType? highlightType;
     if (messageMapped["first-msg"] == "1") {
-      //TODO: use params from TwitchChat as condition
-      if (true) {
+      if (params?.addFirstMessages != null && params!.addFirstMessages!) {
         highlightType = HighlightType.firstTimeChatter;
       }
     }

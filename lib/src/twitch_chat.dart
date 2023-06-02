@@ -272,6 +272,7 @@ class TwitchChat {
                 thirdPartEmotes: _thirdPartEmotes,
                 cheerEmotes: _cheerEmotes,
                 message: message,
+                params: _params,
               );
               _chatStreamController.add(chatMessage);
             }
