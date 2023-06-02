@@ -7,7 +7,7 @@ import 'package:twitch_chat/src/chat_message.dart';
 import 'package:twitch_chat/src/data/ffz_api.dart';
 import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/src/data/twitch_api.dart';
-import 'package:twitch_chat/src/parameters.dart';
+import 'package:twitch_chat/src/twitch_chat_parameters.dart';
 import 'package:web_socket_channel/io.dart';
 
 import 'chat_events/announcement.dart';
@@ -41,7 +41,7 @@ class TwitchChat {
   final Function()? onDone;
   final Function? onError;
 
-  Parameters? _params;
+  TwitchChatParameters? _params;
   List<TwitchBadge> _badges = [];
   List<Emote> _emotes = [];
   List<Emote> _emotesFromSets = [];
@@ -55,7 +55,7 @@ class TwitchChat {
     this._channel,
     this._username,
     this._token, {
-    Parameters? params,
+    TwitchChatParameters? params,
     String? clientId,
     this.onClearChat,
     this.onDeletedMessageByUserId,

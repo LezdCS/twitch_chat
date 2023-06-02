@@ -1,4 +1,4 @@
-class Parameters {
+class TwitchChatParameters {
   bool? addBitsDonations;
   bool? addRewardsRedemptions;
   bool? addSubscriptions;
@@ -7,7 +7,7 @@ class Parameters {
   bool? addRaids;
   bool? addHosts;
 
-  Parameters({
+  TwitchChatParameters({
     this.addBitsDonations,
     this.addRewardsRedemptions,
     this.addSubscriptions,

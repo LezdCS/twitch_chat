@@ -5,6 +5,7 @@ export 'src/twitch_chat.dart';
 export 'src/chat_message.dart';
 export 'src/emote.dart';
 export 'src/twitch_badge.dart';
+export 'src/twitch_chat_parameters.dart';
 
 export 'src/chat_events/announcement.dart';
 export 'src/chat_events/bit_donation.dart';
