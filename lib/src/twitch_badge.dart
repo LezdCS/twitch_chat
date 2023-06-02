@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 
 class TwitchBadge {
@@ -34,24 +35,39 @@ class TwitchBadge {
     Response response;
     var dio = Dio();
     List<TwitchBadge> badges = <TwitchBadge>[];
+
+    List<TwitchBadge> globalBadges = <TwitchBadge>[];
+
     try {
       dio.options.headers['Client-Id'] = kTwitchAuthClientId;
       dio.options.headers["authorization"] = "Bearer $token";
-      response =
-          await dio.get('https://api.twitch.tv/helix/chat/badges/global');
-
-      response.data['data'].forEach(
-        (set) => set['versions'].forEach((version) =>
-            badges.add(TwitchBadge.fromJson(set['set_id'], version))),
-      );
 
       response = await dio.get(
           'https://api.twitch.tv/helix/chat/badges?broadcaster_id=$channelId');
 
       response.data['data'].forEach(
-            (set) => set['versions'].forEach((version) =>
-            badges.add(TwitchBadge.fromJson(set['set_id'], version))),
+        (set) {
+          set['versions'].forEach((version) =>
+              badges.add(TwitchBadge.fromJson(set['set_id'], version)));
+        },
       );
+
+      response =
+          await dio.get('https://api.twitch.tv/helix/chat/badges/global');
+
+      response.data['data'].forEach(
+        (set) => set['versions'].forEach((version) =>
+            globalBadges.add(TwitchBadge.fromJson(set['set_id'], version))),
+      );
+
+      for (var globalBadge in globalBadges) {
+        if (badges.firstWhereOrNull((badge) =>
+                globalBadge.setId == badge.setId &&
+                globalBadge.versionId == badge.versionId) ==
+            null) {
+          badges.add(globalBadge);
+        }
+      }
     } on DioError catch (e) {
       debugPrint(e.toString());
     }
