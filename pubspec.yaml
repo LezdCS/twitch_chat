@@ -1,7 +1,8 @@
 name: twitch_chat
-description: A new Flutter package project.
+description: twitch_tchat allows dart and flutter apps to exploit the Twitch IRC, implying Emotes and Badges.
 version: 0.0.1
-homepage:
+homepage: https://github.com/LezdCS/twitch_chat
+repository: https://github.com/LezdCS/twitch_chat
 
 environment:
   sdk: '>=3.0.1 <4.0.0'
