@@ -38,7 +38,7 @@ class TwitchChat {
   final Function? onDeletedMessageByUserId;
   final Function? onDeletedMessageByMessageId;
   final Function? onConnected;
-  final Function()? onDone;
+  Function()? onDone;
   final Function? onError;
 
   TwitchChatParameters? _params;
@@ -96,10 +96,6 @@ class TwitchChat {
 
   set onConnected(Function? onConnected) {
     this.onConnected = onConnected;
-  }
-
-  set onDone(Function? onDone) {
-    this.onDone = onDone;
   }
 
   set onError(Function? onError) {
