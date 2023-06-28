@@ -3,7 +3,7 @@ description: twitch_tchat allows dart and flutter apps to exploit the Twitch IRC
 version: 0.0.1
 homepage: https://github.com/LezdCS/twitch_chat
 repository: https://github.com/LezdCS/twitch_chat
-publish_to: pub.dev
+publish_to: https://pub.dev/
 
 environment:
   sdk: '>=3.0.1 <4.0.0'
