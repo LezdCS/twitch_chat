@@ -1,39 +1,30 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# twitch_chat
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Package to connect and use the Twitch Chat by Websocket and IRC.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- [x] Connect to chat
+- [x] Connect anonymously
+- [x] Get badges
+- [x] Get emotes
+- [x] Get BTTV, FFZ & 7TV emotes
+- [x] Ban, Timeout, Delete message
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Access token
+Scopes
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Initiate a connection 
+Initiate an anonymous connection
 
 ```dart
 const like = 'sample';
 ```
 
-## Additional information
+## Noticable applications using this package
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+- [irl-link](https://github.com/LezdCS/irl-link) for IRL streamers
