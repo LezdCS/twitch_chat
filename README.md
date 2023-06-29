@@ -21,7 +21,7 @@ Package to connect and use the Twitch Chat by Websocket and IRC.
 
 ## Usage
 
-Initiate a chat 
+Initialize the chat 
 
 ```dart
 TwitchChat twitchChat = TwitchChat(
@@ -44,12 +44,12 @@ Connect to the chat
 twitchChat.connect();
 ```
 
-Listen to the chat messages
+Listen to new chat messages
 ```dart
 twitchChat.chatStream.listen((message) {});
 ```
 
-Listen to connection status changes
+Listen to connection status updates
 ```dart
 twitchChat!.isConnected.addListener(() {
   if (twitchChat.isConnected.value) {
@@ -57,6 +57,26 @@ twitchChat!.isConnected.addListener(() {
   }
 });
 ```
+
+Send a message
+```dart
+twitchChat.sendMessage(message);
+```
+
+Access emotes and badges
+```dart
+//Twitch emotes
+twitchChat.emotes
+twitchChat.emotesFromSets //contain all your subscriptions emotes
+twitchChat.cheerEmotes
+
+//BTTV, 7TV, FFZ emotes (channel & global)
+twitchChat.thirdPartEmotes
+
+//Global & channel badges
+twitchChat.badges
+```
+
 ## Noticable applications using this package
 
 - [irl-link](https://github.com/LezdCS/irl-link) for IRL streamers
