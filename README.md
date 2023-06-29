@@ -16,18 +16,47 @@ Package to connect and use the Twitch Chat by Websocket and IRC.
 
 ## Getting started
 
-Access token
-Scopes
+- Get your access token
+- Use the following scopes:
 
 ## Usage
 
-Initiate a connection 
-Initiate an anonymous connection
+Initiate a chat 
 
 ```dart
-const like = 'sample';
+TwitchChat twitchChat = TwitchChat(
+  channelToJoin,
+  yourUsername,
+  accessToken,
+  clientId: clientId,
+  onConnected: () {},
+  onClearChat: () {},
+  onDeletedMessageByUserId: (String? userId) {},
+  onDeletedMessageByMessageId: (String? messageId) {},
+  onDone: () {},
+  onError: () {},
+  params: TwitchChatParameters(addFirstMessages: true),
+);
 ```
 
+Connect to the chat
+```dart
+twitchChat.connect();
+```
+
+Listen to the chat messages
+```dart
+twitchChat.chatStream.listen((message) {});
+```
+
+Listen to connection status changes
+```dart
+twitchChat!.isConnected.addListener(() {
+  if (twitchChat.isConnected.value) {
+  } else {
+  }
+});
+```
 ## Noticable applications using this package
 
 - [irl-link](https://github.com/LezdCS/irl-link) for IRL streamers
