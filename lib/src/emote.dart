@@ -146,10 +146,4 @@ class Emote {
     }
     return emotes;
   }
-
-
-
-
-
-
 }
