@@ -23,7 +23,7 @@ class TwitchApi {
           Emote.fromJson(emote),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;
@@ -50,7 +50,7 @@ class TwitchApi {
           Emote.fromJson(emote),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;
@@ -79,7 +79,7 @@ class TwitchApi {
           ),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;
@@ -103,7 +103,7 @@ class TwitchApi {
       );
 
       userChannelId = response.data['data'][0]['id'];
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
 
@@ -128,18 +128,18 @@ class TwitchApi {
           'message_id': message.id,
         },
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.response.toString());
     }
   }
 
   static Future<void> banUser(
-      String token,
-      String broadcasterId,
-      ChatMessage message,
-      int? duration,
-      String clientId,
-      ) async {
+    String token,
+    String broadcasterId,
+    ChatMessage message,
+    int? duration,
+    String clientId,
+  ) async {
     var dio = Dio();
     try {
       dio.options.headers['Client-Id'] = clientId;
@@ -161,7 +161,7 @@ class TwitchApi {
         },
         data: jsonEncode(body),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.response.toString());
     }
   }

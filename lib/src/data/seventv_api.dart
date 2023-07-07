@@ -18,7 +18,7 @@ class SeventvApi {
           Emote.fromJson7Tv(emote),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;
@@ -38,7 +38,7 @@ class SeventvApi {
           Emote.fromJson7Tv(emote),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;

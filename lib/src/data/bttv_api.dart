@@ -18,7 +18,7 @@ class BttvApi {
           Emote.fromJsonBttv(emote),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
 
@@ -45,7 +45,7 @@ class BttvApi {
           Emote.fromJsonBttv(emote),
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
 
