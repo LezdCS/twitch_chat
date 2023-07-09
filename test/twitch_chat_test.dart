@@ -1,7 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:twitch_chat/src/chat_message.dart';
-import 'package:twitch_chat/src/data/twitch_api.dart';
 import 'package:twitch_chat/twitch_chat.dart';
 
 void main() {

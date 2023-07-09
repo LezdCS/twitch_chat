@@ -134,12 +134,12 @@ class TwitchApi {
   }
 
   static Future<void> banUser(
-      String token,
-      String broadcasterId,
-      ChatMessage message,
-      int? duration,
-      String clientId,
-      ) async {
+    String token,
+    String broadcasterId,
+    ChatMessage message,
+    int? duration,
+    String clientId,
+  ) async {
     var dio = Dio();
     try {
       dio.options.headers['Client-Id'] = clientId;
