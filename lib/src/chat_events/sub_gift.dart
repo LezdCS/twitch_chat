@@ -48,10 +48,10 @@ class SubGift extends ChatMessage {
     final Map<String, String> messageMapped = {};
 
     List messageSplited = message.split(';');
-    messageSplited.forEach((element) {
+    for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
-    });
+    }
 
     String color =
         ChatMessage.randomUsernameColor(messageMapped['display-name']!);
