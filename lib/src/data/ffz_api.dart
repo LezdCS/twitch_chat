@@ -19,7 +19,7 @@ class FfzApi {
                   Emote.fromJsonFrankerfacez(emote),
                 ),
               });
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;

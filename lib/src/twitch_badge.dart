@@ -68,7 +68,7 @@ class TwitchBadge {
           badges.add(globalBadge);
         }
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return badges;

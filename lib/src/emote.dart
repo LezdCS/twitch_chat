@@ -141,7 +141,7 @@ class Emote {
           );
         });
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint(e.toString());
     }
     return emotes;
