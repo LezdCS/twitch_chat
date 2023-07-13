@@ -2,6 +2,7 @@ import 'package:faker/faker.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:collection/collection.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
+import 'package:twitch_chat/src/utils/split_function.dart';
 import 'package:uuid/uuid.dart';
 
 import 'emote.dart';
@@ -55,7 +56,7 @@ class ChatMessage {
   }) {
     final Map<String, String> messageMapped = {};
 
-    List messageSplited = message.split(';');
+    List messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];

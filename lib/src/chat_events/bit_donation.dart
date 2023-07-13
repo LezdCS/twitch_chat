@@ -2,6 +2,8 @@ import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 import 'package:twitch_chat/src/emote.dart';
 
+import '../utils/split_function.dart';
+
 class BitDonation extends ChatMessage {
   final int totalBits;
 
@@ -42,7 +44,7 @@ class BitDonation extends ChatMessage {
   }) {
     final Map<String, String> messageMapped = {};
 
-    List messageSplited = message.split(';');
+    List messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];

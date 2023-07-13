@@ -8,6 +8,7 @@ import 'package:twitch_chat/src/data/ffz_api.dart';
 import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/src/data/twitch_api.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
+import 'package:twitch_chat/src/utils/split_function.dart';
 import 'package:web_socket_channel/io.dart';
 
 import 'chat_events/announcement.dart';
@@ -49,7 +50,6 @@ class TwitchChat {
   List<Emote> _thirdPartEmotes = [];
 
   ValueNotifier<bool> isConnected = ValueNotifier<bool>(false);
-  bool? _allowDebug = false;
 
   TwitchChat(
     this._channel,
@@ -65,8 +65,7 @@ class TwitchChat {
     this.onError,
     bool? allowDebug,
   })  : _params = params,
-        _clientId = clientId,
-        _allowDebug = allowDebug;
+        _clientId = clientId;
 
   get channel => _channel;
 
@@ -199,7 +198,7 @@ class TwitchChat {
 
   void _chatListener(String message) {
     // debugPrint("Twitch Chat: $message");
-
+    
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
     }
@@ -214,7 +213,7 @@ class TwitchChat {
     }
 
     if (message.startsWith('@')) {
-      List messageSplited = message.split(';');
+      // List messageSplited = message.split(';');
       List<String> keys = [
         "PRIVMSG",
         "CLEARCHAT",
@@ -223,8 +222,10 @@ class TwitchChat {
         "NOTICE",
         "ROOMSTATE"
       ];
-      String? keyResult =
-          keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
+     
+      List messageSplited = parseMessage(message);
+
+      String? keyResult = keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
       final Map<String, String> messageMapped = {};
       for (var element in messageSplited) {
         List elementSplited = element.split('=');

@@ -2,6 +2,7 @@ import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 
 import '../emote.dart';
+import '../utils/split_function.dart';
 
 class SubGift extends ChatMessage {
   final String giftedName;
@@ -47,7 +48,7 @@ class SubGift extends ChatMessage {
   }) {
     final Map<String, String> messageMapped = {};
 
-    List messageSplited = message.split(';');
+    List messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
