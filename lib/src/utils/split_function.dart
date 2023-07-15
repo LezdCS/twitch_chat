@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-List<String> parseMessage (String message) {
-
+List<String> parseMessage(String message) {
   List<String> keys = [
     "PRIVMSG",
     "CLEARCHAT",
@@ -10,20 +9,21 @@ List<String> parseMessage (String message) {
     "NOTICE",
     "ROOMSTATE"
   ];
-      
+
   int i = 0;
-  for(var key in keys){
+  for (var key in keys) {
     i = message.indexOf(key);
-    if(i > 0){
+    if (i > 0) {
       break;
     }
   }
-  if(i == 0){
+  if (i == 0) {
     debugPrint(message);
   }
   String sub = message.substring(0, i - 1);
   String notToSplit = message.substring(i);
   List<String> messageSplited = sub.split(';');
-  messageSplited[messageSplited.length-1] = '${messageSplited[messageSplited.length-1]} $notToSplit';
+  messageSplited[messageSplited.length - 1] =
+      '${messageSplited[messageSplited.length - 1]} $notToSplit';
   return messageSplited;
 }

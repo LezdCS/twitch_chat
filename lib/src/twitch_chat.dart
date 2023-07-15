@@ -198,7 +198,7 @@ class TwitchChat {
 
   void _chatListener(String message) {
     // debugPrint("Twitch Chat: $message");
-    
+
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
     }
@@ -222,10 +222,11 @@ class TwitchChat {
         "NOTICE",
         "ROOMSTATE"
       ];
-     
+
       List messageSplited = parseMessage(message);
 
-      String? keyResult = keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
+      String? keyResult =
+          keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
       final Map<String, String> messageMapped = {};
       for (var element in messageSplited) {
         List elementSplited = element.split('=');
