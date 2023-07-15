@@ -1,4 +1,5 @@
 import 'package:faker/faker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:collection/collection.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
@@ -22,7 +23,8 @@ class ChatMessage {
   final String id;
   final List<TwitchBadge> badges;
   final String color;
-  final String authorName;
+  final String displayName;
+  final String username;
   final String authorId;
   final Map<String, List> emotes;
   final String message;
@@ -36,7 +38,8 @@ class ChatMessage {
     required this.id,
     required this.badges,
     required this.color,
-    required this.authorName,
+    required this.displayName,
+    required this.username,
     required this.authorId,
     required this.emotes,
     required this.message,
@@ -56,7 +59,7 @@ class ChatMessage {
   }) {
     final Map<String, String> messageMapped = {};
 
-    List messageSplited = parseMessage(message);
+    List<String> messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
@@ -82,7 +85,6 @@ class ChatMessage {
       }
     }
 
-    //We get the message wrote by the user
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
 
@@ -99,7 +101,8 @@ class ChatMessage {
       id: messageMapped['id'] as String,
       badges: badges,
       color: color,
-      authorName: messageMapped['display-name'] as String,
+      displayName: messageMapped['display-name'] as String,
+      username: '',
       authorId: messageMapped['user-id'] as String,
       emotes: emotesIdsPositions,
       message: messageString,
@@ -201,7 +204,8 @@ class ChatMessage {
       id: uuid.v4(),
       badges: [],
       color: color,
-      authorName: username,
+      displayName: username,
+      username: username,
       authorId: uuid.v4(),
       emotes: {},
       message: message ?? faker.lorem.sentence(),

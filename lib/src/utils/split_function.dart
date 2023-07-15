@@ -1,4 +1,6 @@
-List parseMessage (String message) {
+import 'package:flutter/material.dart';
+
+List<String> parseMessage (String message) {
 
   List<String> keys = [
     "PRIVMSG",
@@ -16,9 +18,12 @@ List parseMessage (String message) {
       break;
     }
   }
+  if(i == 0){
+    debugPrint(message);
+  }
   String sub = message.substring(0, i - 1);
   String notToSplit = message.substring(i);
-  List messageSplited = sub.split(';');
-  messageSplited[messageSplited.length-1] = messageSplited[messageSplited.length-1] + ' ' + notToSplit;
+  List<String> messageSplited = sub.split(';');
+  messageSplited[messageSplited.length-1] = '${messageSplited[messageSplited.length-1]} $notToSplit';
   return messageSplited;
 }

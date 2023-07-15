@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 
@@ -13,7 +14,8 @@ class Subscription extends ChatMessage {
     required id,
     required badges,
     required color,
-    required authorName,
+    required displayName,
+    required username,
     required authorId,
     required emotes,
     required message,
@@ -29,7 +31,8 @@ class Subscription extends ChatMessage {
           id: id,
           badges: badges,
           color: color,
-          authorName: authorName,
+          displayName: displayName,
+          username: username,
           authorId: authorId,
           emotes: emotes,
           message: message,
@@ -70,7 +73,8 @@ class Subscription extends ChatMessage {
       badges: ChatMessage.parseBadges(
           messageMapped['badges'].toString(), twitchBadges),
       color: color,
-      authorName: messageMapped['display-name'] as String,
+      displayName: messageMapped['display-name'] as String,
+      username: '',
       authorId: messageMapped['user-id'] as String,
       emotes: emotesIdsPositions,
       message: messageString,
@@ -103,7 +107,8 @@ class Subscription extends ChatMessage {
       id: '123456789',
       badges: badges,
       color: ChatMessage.randomUsernameColor('Lezd'),
-      authorName: 'Lezd',
+      displayName: 'Lezd',
+      username: 'Lezd',
       authorId: '123456789',
       emotes: <String, List<dynamic>>{},
       message: message,
