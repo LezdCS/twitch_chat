@@ -1,5 +1,4 @@
 import 'package:faker/faker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:collection/collection.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
