@@ -18,7 +18,7 @@ dependencies:
   uuid: ^3.0.7
 
 dev_dependencies:
-  flutter_test: any
+  flutter_test:
   flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
