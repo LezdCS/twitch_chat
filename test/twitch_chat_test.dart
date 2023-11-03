@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 90000))
+
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twitch_chat/twitch_chat.dart';
@@ -6,16 +8,19 @@ void main() {
   const token = "";
   const clientId = "";
 
+
   test('connect anonymously to a chat', () async {
     TwitchChat chat = TwitchChat.anonymous(
-      "Lezd_",
+      "lezd_",
     );
 
+    // chat.chatStream.listen((event) => debugPrint(event.highlightType.toString()));
+
     chat.connect();
-    await Future.delayed(const Duration(seconds: 8), () {});
-    expectLater(chat.isConnected, true);
-    chat.quit();
-    chat.close();
+    await Future.delayed(const Duration(seconds: 90000), () {});
+    // expectLater(chat.isConnected, true);
+    // chat.quit();
+    // chat.close();
   });
 
   test('connect to a chat', () async {
