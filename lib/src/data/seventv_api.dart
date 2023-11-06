@@ -30,7 +30,7 @@ class SeventvApi {
     List<Emote> emotes = <Emote>[];
     try {
       response = await dio.get(
-        'https://7tv.io/v3/users/twitch/$broadcasterId'.
+        'https://7tv.io/v3/users/twitch/$broadcasterId',
       );
 
       response.data.forEach(
