@@ -6,20 +6,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/twitch_chat.dart';
 
-void main() {
-  const token = "";
-  const clientId = "";
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+
+  String token = dotenv.env["USER_TOKEN"]!;
+  String clientId = dotenv.env["TWITCH_CLIENT_ID"]!;
 
   // Get the 7TV emotes of the user Lezd_
   test('get 7TV emotes', () async {
-    await dotenv.load(fileName: ".env");
-
     String? channelId = await TwitchApi.getTwitchUserChannelId(
       "Lezd_",
-      dotenv.env["USER_TOKEN"]!,
-      dotenv.env["TWITCH_CLIENT_ID"]!,
+      token,
+      clientId,
     );
-    
+
     List<Emote> emotes = await SeventvApi.getChannelEmotes(
       channelId!,
     );
