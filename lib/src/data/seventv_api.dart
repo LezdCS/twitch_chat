@@ -32,8 +32,7 @@ class SeventvApi {
       response = await dio.get(
         'https://7tv.io/v3/users/twitch/$broadcasterId',
       );
-
-      response.data.forEach(
+      response.data['emote_set']['emotes'].forEach(
         (emote) => emotes.add(
           Emote.fromJson7Tv(emote),
         ),

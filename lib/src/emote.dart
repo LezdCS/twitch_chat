@@ -100,16 +100,37 @@ class Emote {
   }
 
   factory Emote.fromJson7Tv(Map<String, dynamic> map) {
+    String url = map['data']['host']['url'];
+    // Find in a list of files the objects with attribute format: AVIF,  If there is no AVIF format, find the first WEBP format
+    List avifNames = (map['data']['host']['files'] as List)
+        .where((element) => element['format'] == "AVIF")
+        .toList();
+
+    String url1x = url +
+        (avifNames.isNotEmpty
+            ? avifNames[0]['name']
+            : map['data']['host']['files'][0]['name']);
+
+    String url2x = url +
+        (avifNames.length > 1
+            ? avifNames[1]['name']
+            : map['data']['host']['files'][1]['name']);
+
+    String url4x = url +
+        (avifNames.length > 2
+            ? avifNames[2]['name']
+            : map['data']['host']['files'][2]['name']);
+
     return Emote(
       id: map["id"].toString(),
       name: map["name"],
-      url1x: map['urls'][0][1].toString(),
-      url2x: map['urls'][1][1].toString(),
-      url4x: map['urls'][2][1].toString(),
+      url1x: url1x,
+      url2x: url2x,
+      url4x: url4x,
       color: null,
       emoteType: EmoteType.thirdPart,
-      isZeroWidth:
-          map['visibility_simple'].contains("ZERO_WIDTH") ? true : false,
+      isZeroWidth: false,
+          // map['visibility_simple']?.contains("ZERO_WIDTH") ? true : false,
     );
   }
 
