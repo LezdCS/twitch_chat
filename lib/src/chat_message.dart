@@ -84,8 +84,14 @@ class ChatMessage {
       }
     }
 
+    // We extract the message from a string as bellow
+    // user-type= :lezd_!lezd_@lezd_.tmi.twitch.tv PRIVMSG #lezd_ :tttt
     List messageList = messageSplited.last.split(':').sublist(2);
     String messageString = messageList.join(':');
+
+    // We extract the username from a string as bellow
+    // user-type= :lezd_!lezd_@lezd_.tmi.twitch.tv PRIVMSG #lezd_ :tttt
+    String username = messageSplited.last.split(':')[1].split('!')[0];
 
     //We check if the message is an action (/me)
     bool isAction = messageString.startsWith("ACTION");
@@ -101,7 +107,7 @@ class ChatMessage {
       badges: badges,
       color: color,
       displayName: messageMapped['display-name'] as String,
-      username: '',
+      username: username,
       authorId: messageMapped['user-id'] as String,
       emotes: emotesIdsPositions,
       message: messageString,
@@ -216,5 +222,11 @@ class ChatMessage {
       isDeleted: false,
       rawData: '',
     );
+  }
+
+  // toString
+  @override
+  String toString() {
+    return 'ChatMessage(id: $id, badges: $badges, color: $color, displayName: $displayName, username: $username, authorId: $authorId, emotes: $emotes, message: $message, timestamp: $timestamp, highlightType: $highlightType, isAction: $isAction, isDeleted: $isDeleted, rawData: $rawData)';
   }
 }

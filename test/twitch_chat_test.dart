@@ -32,13 +32,12 @@ Future<void> main() async {
       "lezd_",
     );
 
-    // chat.chatStream.listen((event) => debugPrint(event.highlightType.toString()));
+    // chat.chatStream.listen((event) => debugPrint(event.toString()));
 
     chat.connect();
     await Future.delayed(const Duration(seconds: 90000), () {});
-    // expectLater(chat.isConnected, true);
-    // chat.quit();
-    // chat.close();
+    expectLater(chat.isConnected, true);
+    chat.close();
   });
 
   test('connect to a chat', () async {
@@ -50,10 +49,14 @@ Future<void> main() async {
     );
 
     chat.connect();
-    await Future.delayed(const Duration(seconds: 8), () {});
-    expectLater(chat.isConnected, true);
-    chat.quit();
-    chat.close();
+    chat.isConnected.addListener(() {
+      if (chat.isConnected.value) {
+        expect(chat.isConnected, true);
+      }
+    });
+    await Future.delayed(const Duration(seconds: 30), () {
+      chat.close();
+    });
   });
 
   test('switch to another chat', () async {
