@@ -13,7 +13,7 @@ class SeventvApi {
         'https://7tv.io/v3/emote-sets/global',
       );
 
-      response.data.forEach(
+      response.data['emotes'].forEach(
         (emote) => emotes.add(
           Emote.fromJson7Tv(emote),
         ),
