@@ -107,24 +107,15 @@ class Emote {
     url = url.substring(2);
 
     // Find in a list of files the objects with attribute format: AVIF,  If there is no AVIF format, find the first WEBP format
-    List avifNames = (map['data']['host']['files'] as List)
-        .where((element) => element['format'] == "AVIF")
+    List webpfNames = (map['data']['host']['files'] as List)
+        .where((element) => element['format'] == "WEBP")
         .toList();
 
-    String url1x = 'https://$url/' +
-        (avifNames.isNotEmpty
-            ? avifNames[0]['name']
-            : map['data']['host']['files'][0]['name']);
+    String url1x = 'https://$url/' + webpfNames[0]['name'];
 
-    String url2x = 'https://$url/' +
-        (avifNames.length > 1
-            ? avifNames[1]['name']
-            : map['data']['host']['files'][1]['name']);
+    String url2x = 'https://$url/' + webpfNames[1]['name'];
 
-    String url4x = 'https://$url/' +
-        (avifNames.length > 2
-            ? avifNames[2]['name']
-            : map['data']['host']['files'][2]['name']);
+    String url4x = 'https://$url/' + webpfNames[2]['name'];
 
     return Emote(
       id: map["id"].toString(),
