@@ -42,4 +42,23 @@ class SeventvApi {
     }
     return emotes;
   }
+
+  static Future<List<Emote>> getKickChannelEmotes(String broadcasterId) async {
+    Response response;
+    var dio = Dio();
+    List<Emote> emotes = <Emote>[];
+    try {
+      response = await dio.get(
+        'https://7tv.io/v3/users/kick/$broadcasterId',
+      );
+      response.data['emote_set']['emotes'].forEach(
+        (emote) => emotes.add(
+          Emote.fromJson7Tv(emote),
+        ),
+      );
+    } on DioException catch (e) {
+      debugPrint(e.toString());
+    }
+    return emotes;
+  }
 }

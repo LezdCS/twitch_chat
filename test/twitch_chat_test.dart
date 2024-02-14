@@ -1,16 +1,14 @@
 @Timeout(Duration(seconds: 90000))
 
 import 'package:collection/collection.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/twitch_chat.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
 
-  String token = dotenv.env["USER_TOKEN"]!;
-  String clientId = dotenv.env["TWITCH_CLIENT_ID"]!;
+  String token = 'USER_TOKEN';
+  String clientId = 'TWITCH_CLIENT_ID';
 
   // Get the 7TV emotes of the user Lezd_
   test('get 7TV emotes', () async {
