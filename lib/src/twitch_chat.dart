@@ -9,7 +9,7 @@ import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/src/data/twitch_api.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
 import 'package:twitch_chat/src/utils/split_function.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'chat_events/announcement.dart';
 import 'chat_events/bit_donation.dart';
@@ -28,7 +28,7 @@ class TwitchChat {
 
   String? _clientId;
 
-  IOWebSocketChannel? _webSocketChannel;
+  WebSocketChannel? _webSocketChannel;
   StreamSubscription? _streamSubscription;
 
   final StreamController _chatStreamController = StreamController.broadcast();
@@ -157,7 +157,7 @@ class TwitchChat {
     }
 
     _webSocketChannel =
-        IOWebSocketChannel.connect("wss://irc-ws.chat.twitch.tv:443");
+        WebSocketChannel.connect(Uri.parse("wss://irc-ws.chat.twitch.tv:443"));
 
     _streamSubscription = _webSocketChannel?.stream.listen(
       (data) => _chatListener(data),
