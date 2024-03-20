@@ -54,7 +54,7 @@ class ChatMessage {
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,
-    TwitchChatParameters? params,
+    required TwitchChatParameters params,
   }) {
     final Map<String, String> messageMapped = {};
 
@@ -79,7 +79,7 @@ class ChatMessage {
 
     HighlightType? highlightType;
     if (messageMapped["first-msg"] == "1") {
-      if (params?.addFirstMessages != null && params!.addFirstMessages!) {
+      if (params.addFirstMessages) {
         highlightType = HighlightType.firstTimeChatter;
       }
     }

@@ -1,19 +1,19 @@
 class TwitchChatParameters {
-  bool? addBitsDonations;
-  bool? addRewardsRedemptions;
-  bool? addSubscriptions;
-  bool? addFirstMessages;
-  bool? addAnnouncements;
-  bool? addRaids;
-  bool? addHosts;
+  final bool addBitsDonations;
+  final bool addRewardsRedemptions;
+  final bool addSubscriptions;
+  final bool addFirstMessages;
+  final bool addAnnouncements;
+  final bool addRaids;
+  final bool addHosts;
 
-  TwitchChatParameters({
-    this.addBitsDonations,
-    this.addRewardsRedemptions,
-    this.addSubscriptions,
-    this.addFirstMessages,
-    this.addAnnouncements,
-    this.addRaids,
-    this.addHosts,
+  const TwitchChatParameters({
+    this.addBitsDonations = true,
+    this.addRewardsRedemptions = true,
+    this.addSubscriptions = true,
+    this.addFirstMessages = false,
+    this.addAnnouncements = true,
+    this.addRaids = true,
+    this.addHosts = true,
   });
 }

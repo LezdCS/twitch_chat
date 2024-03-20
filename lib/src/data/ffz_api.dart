@@ -14,11 +14,11 @@ class FfzApi {
       );
 
       response.data['sets'][response.data['sets'].keys.toList()[0]]['emoticons']
-          .forEach((emote) => {
-                emotes.add(
-                  Emote.fromJsonFrankerfacez(emote),
-                ),
-              });
+          .forEach(
+        (emote) => emotes.add(
+          Emote.fromJsonFrankerfacez(emote),
+        ),
+      );
     } on DioException catch (e) {
       debugPrint(e.toString());
     }
