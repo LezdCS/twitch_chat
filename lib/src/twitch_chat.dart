@@ -20,6 +20,8 @@ import 'chat_events/subscription.dart';
 import 'data/bttv_api.dart';
 import 'emote.dart';
 
+typedef MessageDeletedCallback = void Function(String);
+
 class TwitchChat {
   String _channel;
   String? _channelId;
@@ -31,18 +33,19 @@ class TwitchChat {
   WebSocketChannel? _webSocketChannel;
   StreamSubscription? _streamSubscription;
 
-  final StreamController _chatStreamController = StreamController.broadcast();
+  final StreamController<ChatMessage> _chatStreamController =
+      StreamController.broadcast();
 
-  Stream get chatStream => _chatStreamController.stream;
+  Stream<ChatMessage> get chatStream => _chatStreamController.stream;
 
-  final Function? onClearChat;
-  final Function? onDeletedMessageByUserId;
-  final Function? onDeletedMessageByMessageId;
-  final Function? onConnected;
-  Function()? onDone;
+  final VoidCallback? onClearChat;
+  final MessageDeletedCallback? onDeletedMessageByUserId;
+  final MessageDeletedCallback? onDeletedMessageByMessageId;
+  final VoidCallback? onConnected;
+  VoidCallback? onDone;
   final Function? onError;
 
-  TwitchChatParameters? _params;
+  TwitchChatParameters _params;
   List<TwitchBadge> _badges = [];
   List<Emote> _emotes = [];
   List<Emote> _emotesFromSets = [];
@@ -55,7 +58,7 @@ class TwitchChat {
     this._channel,
     this._username,
     this._token, {
-    TwitchChatParameters? params,
+    TwitchChatParameters params = const TwitchChatParameters(),
     String? clientId,
     this.onClearChat,
     this.onDeletedMessageByUserId,
@@ -67,33 +70,37 @@ class TwitchChat {
   })  : _params = params,
         _clientId = clientId;
 
-  get channel => _channel;
+  String get channel => _channel;
 
-  get channelId => _channelId;
+  String? get channelId => _channelId;
 
-  get badges => _badges;
+  List<TwitchBadge> get badges => _badges;
 
-  get emotes => _emotes;
+  List<Emote> get emotes => _emotes;
 
-  get emotesFromSets => _emotesFromSets;
+  List<Emote> get emotesFromSets => _emotesFromSets;
 
-  get cheerEmotes => _cheerEmotes;
+  List<Emote> get cheerEmotes => _cheerEmotes;
 
-  get thirdPartEmotes => _thirdPartEmotes;
+  List<Emote> get thirdPartEmotes => _thirdPartEmotes;
 
-  set onClearChat(Function? onClearChat) {
+  set onClearChat(VoidCallback? onClearChat) {
     this.onClearChat = onClearChat;
   }
 
-  set onDeletedMessageByUserId(Function? onDeletedMessageByUserId) {
+  set onDeletedMessageByUserId(
+    MessageDeletedCallback? onDeletedMessageByUserId,
+  ) {
     this.onDeletedMessageByUserId = onDeletedMessageByUserId;
   }
 
-  set onDeletedMessageByMessageId(Function? onDeletedMessageByMessageId) {
+  set onDeletedMessageByMessageId(
+    MessageDeletedCallback? onDeletedMessageByMessageId,
+  ) {
     this.onDeletedMessageByMessageId = onDeletedMessageByMessageId;
   }
 
-  set onConnected(Function? onConnected) {
+  set onConnected(VoidCallback? onConnected) {
     this.onConnected = onConnected;
   }
 
@@ -236,78 +243,68 @@ class TwitchChat {
       if (keyResult != null) {
         switch (keyResult) {
           case "PRIVMSG":
-            {
-              if (messageMapped['bits'] != null) {
-                if (_params?.addBitsDonations != null &&
-                    !_params!.addBitsDonations!) {
-                  return;
-                }
-                BitDonation bitDonation = BitDonation.fromString(
-                  twitchBadges: _badges,
-                  cheerEmotes: _cheerEmotes,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  message: message,
-                );
-                _chatStreamController.add(bitDonation);
-                break;
+            if (messageMapped['bits'] != null) {
+              if (!_params.addBitsDonations) {
+                return;
               }
-              if (messageMapped["custom-reward-id"] != null) {
-                if (_params?.addRewardsRedemptions != null &&
-                    !_params!.addRewardsRedemptions!) {
-                  return;
-                }
-                RewardRedemption rewardRedemption = RewardRedemption.fromString(
-                  twitchBadges: _badges,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  cheerEmotes: _cheerEmotes,
-                  message: message,
-                );
-                _chatStreamController.add(rewardRedemption);
-                break;
+              BitDonation bitDonation = BitDonation.fromString(
+                twitchBadges: _badges,
+                cheerEmotes: _cheerEmotes,
+                thirdPartEmotes: _thirdPartEmotes,
+                message: message,
+              );
+              _chatStreamController.add(bitDonation);
+              break;
+            }
+            if (messageMapped["custom-reward-id"] != null) {
+              if (!_params.addRewardsRedemptions) {
+                return;
               }
-              ChatMessage chatMessage = ChatMessage.fromString(
+              RewardRedemption rewardRedemption = RewardRedemption.fromString(
                 twitchBadges: _badges,
                 thirdPartEmotes: _thirdPartEmotes,
                 cheerEmotes: _cheerEmotes,
                 message: message,
-                params: _params,
               );
-              _chatStreamController.add(chatMessage);
+              _chatStreamController.add(rewardRedemption);
+              break;
             }
-            break;
+            ChatMessage chatMessage = ChatMessage.fromString(
+              twitchBadges: _badges,
+              thirdPartEmotes: _thirdPartEmotes,
+              cheerEmotes: _cheerEmotes,
+              message: message,
+              params: _params,
+            );
+            _chatStreamController.add(chatMessage);
           case 'ROOMSTATE':
             break;
           case "CLEARCHAT":
-            {
-              if (messageMapped['target-user-id'] != null) {
-                // @ban-duration=43;room-id=169185650;target-user-id=107285371;tmi-sent-ts=1642601142470 :tmi.twitch.tv CLEARCHAT #robcdee :lezd_
-                String userId = messageMapped['target-user-id']!;
-                if (onDeletedMessageByUserId != null) {
-                  onDeletedMessageByUserId!(userId);
-                }
-              } else {
-                //@room-id=107285371;tmi-sent-ts=1642256684032 :tmi.twitch.tv CLEARCHAT #lezd_
-                if (onClearChat != null) {
-                  onClearChat!();
-                }
+            if (messageMapped['target-user-id'] != null) {
+              // @ban-duration=43;room-id=169185650;target-user-id=107285371;tmi-sent-ts=1642601142470 :tmi.twitch.tv CLEARCHAT #robcdee :lezd_
+              String userId = messageMapped['target-user-id']!;
+              if (onDeletedMessageByUserId != null) {
+                onDeletedMessageByUserId!(userId);
+              }
+            } else {
+              //@room-id=107285371;tmi-sent-ts=1642256684032 :tmi.twitch.tv CLEARCHAT #lezd_
+              if (onClearChat != null) {
+                onClearChat!();
               }
             }
-            break;
           case "CLEARMSG":
-            {
-              //clear a specific msg by the id
-              // @login=lezd_;room-id=;target-msg-id=5ecb6458-198c-498c-b91b-16f1e12f58b4;tmi-sent-ts=1640717427981
-              // :tmi.twitch.tv CLEARMSG #lezd_ :okokok
+            //clear a specific msg by the id
+            // @login=lezd_;room-id=;target-msg-id=5ecb6458-198c-498c-b91b-16f1e12f58b4;tmi-sent-ts=1640717427981
+            // :tmi.twitch.tv CLEARMSG #lezd_ :okokok
+            if (messageMapped.containsKey('target-msg-id')) {
+              String messageId = messageMapped['target-msg-id']!;
               if (onDeletedMessageByMessageId != null) {
-                onDeletedMessageByMessageId!(messageMapped['target-msg-id']);
+                onDeletedMessageByMessageId!(messageId);
               }
             }
-            break;
           case "NOTICE":
-            {
-              //error and success messages are send by notice
-              //https://dev.twitch.tv/docs/irc/msg-id
-            }
+            //error and success messages are send by notice
+            //https://dev.twitch.tv/docs/irc/msg-id
             break;
           case "USERNOTICE":
             final Map<String, String> messageMapped = {};
@@ -322,8 +319,7 @@ class TwitchChat {
             String messageId = messageMapped['msg-id']!;
             switch (messageId) {
               case "announcement":
-                if (_params?.addAnnouncements != null &&
-                    !_params!.addAnnouncements!) {
+                if (!_params.addAnnouncements) {
                   return;
                 }
                 Announcement announcement = Announcement.fromString(
@@ -335,8 +331,7 @@ class TwitchChat {
                 _chatStreamController.add(announcement);
                 break;
               case "sub":
-                if (_params?.addSubscriptions != null &&
-                    !_params!.addSubscriptions!) {
+                if (!_params.addSubscriptions) {
                   return;
                 }
                 Subscription subMessage = Subscription.fromString(
@@ -348,8 +343,7 @@ class TwitchChat {
                 _chatStreamController.add(subMessage);
                 break;
               case "resub":
-                if (_params?.addSubscriptions != null &&
-                    !_params!.addSubscriptions!) {
+                if (!_params.addSubscriptions) {
                   return;
                 }
                 Subscription subMessage = Subscription.fromString(
@@ -361,8 +355,7 @@ class TwitchChat {
                 _chatStreamController.add(subMessage);
                 break;
               case "subgift":
-                if (_params?.addSubscriptions != null &&
-                    !_params!.addSubscriptions!) {
+                if (!_params.addSubscriptions) {
                   return;
                 }
                 SubGift subGift = SubGift.fromString(
@@ -374,7 +367,7 @@ class TwitchChat {
                 _chatStreamController.add(subGift);
                 break;
               case "raid":
-                if (_params?.addRaids != null && !_params!.addRaids!) {
+                if (!_params.addRaids) {
                   return;
                 }
                 IncomingRaid raid = IncomingRaid.fromString(
@@ -390,7 +383,7 @@ class TwitchChat {
             }
         }
       }
-    } else if (message.toString().contains("GLOBALUSERSTATE")) {
+    } else if (message.contains("GLOBALUSERSTATE")) {
       final Map<String, String> messageMapped = {};
       List messageSplited = message.split(';');
       for (var element in messageSplited) {
@@ -414,17 +407,17 @@ class TwitchChat {
   Future<List<Emote>> _getThirdPartEmotes() async {
     List<Emote> emotes = [];
 
-    await BttvApi.getGlobalEmotes().then((value) => {emotes.addAll(value)});
+    await BttvApi.getGlobalEmotes().then((value) => emotes.addAll(value));
 
     await BttvApi.getChannelEmotes(_channelId!)
-        .then((value) => {emotes.addAll(value)});
+        .then((value) => emotes.addAll(value));
 
-    await FfzApi.getEmotes(_channelId!).then((value) => {emotes.addAll(value)});
+    await FfzApi.getEmotes(_channelId!).then((value) => emotes.addAll(value));
 
     await SeventvApi.getChannelEmotes(_channelId!)
-        .then((value) => {emotes.addAll(value)});
+        .then((value) => emotes.addAll(value));
 
-    await SeventvApi.getGlobalEmotes().then((value) => {emotes.addAll(value)});
+    await SeventvApi.getGlobalEmotes().then((value) => emotes.addAll(value));
 
     return emotes;
   }
