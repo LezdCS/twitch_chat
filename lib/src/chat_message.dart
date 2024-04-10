@@ -30,6 +30,9 @@ class ChatMessage {
   final int timestamp;
   final HighlightType? highlightType;
   final bool isAction;
+  final bool isSubscriber;
+  final bool isModerator;
+  final bool isVip;
   bool isDeleted;
   String rawData;
 
@@ -45,6 +48,9 @@ class ChatMessage {
     required this.timestamp,
     required this.highlightType,
     required this.isAction,
+    required this.isSubscriber,
+    required this.isModerator,
+    required this.isVip,
     required this.isDeleted,
     required this.rawData,
   });
@@ -114,6 +120,9 @@ class ChatMessage {
       timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
       highlightType: highlightType,
       isAction: isAction,
+      isSubscriber: messageMapped['subscriber'] == '1',
+      isModerator: messageMapped['mod'] == '1',
+      isVip: messageMapped['vip'] != null,
       isDeleted: false,
       rawData: message,
     );
@@ -219,6 +228,9 @@ class ChatMessage {
           .microsecondsSinceEpoch,
       highlightType: highlightType,
       isAction: false,
+      isSubscriber: false,
+      isModerator: false,
+      isVip: false,
       isDeleted: false,
       rawData: '',
     );
@@ -227,6 +239,6 @@ class ChatMessage {
   // toString
   @override
   String toString() {
-    return 'ChatMessage(id: $id, badges: $badges, color: $color, displayName: $displayName, username: $username, authorId: $authorId, emotes: $emotes, message: $message, timestamp: $timestamp, highlightType: $highlightType, isAction: $isAction, isDeleted: $isDeleted, rawData: $rawData)';
+    return 'ChatMessage(id: $id, badges: $badges, color: $color, displayName: $displayName, username: $username, authorId: $authorId, emotes: $emotes, message: $message, timestamp: $timestamp, highlightType: $highlightType, isAction: $isAction, isSubscriber: $isSubscriber, isModerator: $isModerator, isVip: $isVip isDeleted: $isDeleted, rawData: $rawData)';
   }
 }
