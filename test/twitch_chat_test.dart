@@ -153,7 +153,7 @@ Future<void> main() async {
     late ChatMessage messageDeleted;
     chat.chatStream.listen((message) {
       messageDeleted = message;
-      TwitchApi.banUser(token, channelId!, message, 10, clientId);
+      TwitchApi.banUser(token, channelId!, message.authorId, 10, clientId);
     });
 
     chat.onDeletedMessageByUserId = ((userId) {
@@ -189,7 +189,7 @@ Future<void> main() async {
     late ChatMessage messageDeleted;
     chat.chatStream.listen((message) {
       messageDeleted = message;
-      TwitchApi.deleteMessage(token, channelId!, message, clientId);
+      TwitchApi.deleteMessage(token, channelId!, message.id, clientId);
     });
 
     chat.onDeletedMessageByMessageId = ((messageId) {
