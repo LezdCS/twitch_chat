@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../chat_message.dart';
 import '../emote.dart';
 
 class TwitchApi {
@@ -113,7 +112,7 @@ class TwitchApi {
   static Future<void> deleteMessage(
     String token,
     String channelId,
-    ChatMessage message,
+    String messageId,
     String clientId,
   ) async {
     var dio = Dio();
@@ -125,7 +124,7 @@ class TwitchApi {
         queryParameters: {
           'broadcaster_id': channelId,
           'moderator_id': channelId,
-          'message_id': message.id,
+          'message_id': messageId,
         },
       );
     } on DioException catch (e) {
@@ -136,7 +135,7 @@ class TwitchApi {
   static Future<void> banUser(
     String token,
     String broadcasterId,
-    ChatMessage message,
+    String authorId,
     int? duration,
     String clientId,
   ) async {
@@ -146,7 +145,7 @@ class TwitchApi {
       dio.options.headers["authorization"] = "Bearer $token";
       Map body = {
         "data": {
-          "user_id": message.authorId,
+          "user_id": authorId,
         },
       };
       if (duration != null) {
