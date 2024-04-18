@@ -13,3 +13,12 @@ Code format and pub score
 ## 0.0.4
 
 Fix 7TV emotes
+
+## 1.0.0
+
+Release stable
+
+## 1.1.0
+
+Breaking changes
+Fixed few stuff
