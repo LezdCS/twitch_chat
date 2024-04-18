@@ -23,6 +23,6 @@ Release stable
 Breaking changes
 Fixed few stuff
 
-## 1.1.0
+## 1.2.0
 
 Breaking changes (Twitch API)
