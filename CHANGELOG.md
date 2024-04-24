@@ -26,3 +26,7 @@ Fixed few stuff
 ## 1.2.0
 
 Breaking changes (Twitch API)
+
+## 1.2.1
+
+Use api_7tv package
