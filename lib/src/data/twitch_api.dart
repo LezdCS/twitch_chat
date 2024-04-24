@@ -135,7 +135,7 @@ class TwitchApi {
   static Future<void> banUser(
     String token,
     String broadcasterId,
-    String userId,
+    String authorId,
     int? duration,
     String clientId,
   ) async {
@@ -145,7 +145,7 @@ class TwitchApi {
       dio.options.headers["authorization"] = "Bearer $token";
       Map body = {
         "data": {
-          "user_id": userId,
+          "user_id": authorId,
         },
       };
       if (duration != null) {
