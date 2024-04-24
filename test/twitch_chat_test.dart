@@ -1,12 +1,11 @@
 @Timeout(Duration(seconds: 90000))
 
+import 'package:api_7tv/api_7tv.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/twitch_chat.dart';
 
 Future<void> main() async {
-
   String token = 'USER_TOKEN';
   String clientId = 'TWITCH_CLIENT_ID';
 
@@ -18,8 +17,12 @@ Future<void> main() async {
       clientId,
     );
 
-    List<Emote> emotes = await SeventvApi.getChannelEmotes(
-      channelId!,
+    List emotesCall = await SeventvApi.getChannelEmotes(channelId!) ?? [];
+    List<Emote> emotes = [];
+    emotesCall.forEach(
+      (emote) => emotes.add(
+        Emote.fromJson7Tv(emote),
+      ),
     );
 
     expect(emotes, isNotEmpty);

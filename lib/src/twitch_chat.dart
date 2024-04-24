@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:api_7tv/api_7tv.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 import 'package:twitch_chat/src/data/ffz_api.dart';
-import 'package:twitch_chat/src/data/seventv_api.dart';
 import 'package:twitch_chat/src/data/twitch_api.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
 import 'package:twitch_chat/src/utils/split_function.dart';
@@ -414,10 +414,21 @@ class TwitchChat {
 
     await FfzApi.getEmotes(_channelId!).then((value) => emotes.addAll(value));
 
-    await SeventvApi.getChannelEmotes(_channelId!)
-        .then((value) => emotes.addAll(value));
+    await SeventvApi.getChannelEmotes(_channelId!).then((value) => {
+          value?.forEach(
+            (emote) => emotes.add(
+              Emote.fromJson7Tv(emote),
+            ),
+          )
+        });
 
-    await SeventvApi.getGlobalEmotes().then((value) => emotes.addAll(value));
+    await SeventvApi.getGlobalEmotes().then((value) => {
+          value?.forEach(
+            (emote) => emotes.add(
+              Emote.fromJson7Tv(emote),
+            ),
+          )
+        });
 
     return emotes;
   }
