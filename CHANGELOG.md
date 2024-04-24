@@ -30,3 +30,7 @@ Breaking changes (Twitch API)
 ## 1.2.1
 
 Use api_7tv package
+
+## 1.2.2
+
+Bump depedencies
