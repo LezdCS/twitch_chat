@@ -16,6 +16,7 @@ enum HighlightType {
   channelPointRedemption,
   announcement,
   shoutout,
+  highlightedMessage,
 }
 
 class ChatMessage {
@@ -84,10 +85,11 @@ class ChatMessage {
         parseEmotes(messageMapped);
 
     HighlightType? highlightType;
-    if (messageMapped["first-msg"] == "1") {
-      if (params.addFirstMessages) {
-        highlightType = HighlightType.firstTimeChatter;
-      }
+    if (params.addFirstMessages && messageMapped["first-msg"] == "1") {
+      highlightType = HighlightType.firstTimeChatter;
+    } else if (params.addHighlightedMessages &&
+        messageMapped["msg-id"] == "highlighted-message") {
+      highlightType = HighlightType.highlightedMessage;
     }
 
     // We extract the message from a string as bellow
