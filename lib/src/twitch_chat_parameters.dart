@@ -6,6 +6,7 @@ class TwitchChatParameters {
   final bool addAnnouncements;
   final bool addRaids;
   final bool addHosts;
+  final bool addHighlightedMessages;
 
   const TwitchChatParameters({
     this.addBitsDonations = true,
@@ -15,5 +16,6 @@ class TwitchChatParameters {
     this.addAnnouncements = true,
     this.addRaids = true,
     this.addHosts = true,
+    this.addHighlightedMessages = false,
   });
 }
