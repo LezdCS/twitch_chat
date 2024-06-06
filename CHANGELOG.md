@@ -34,3 +34,7 @@ Use api_7tv package
 ## 1.2.2
 
 Bump depedencies
+
+## 1.2.3
+
+Bump depedencies
