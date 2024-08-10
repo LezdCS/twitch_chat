@@ -17,6 +17,8 @@ class Emote {
   final String url1x;
   final String url2x;
   final String url4x;
+  final String? emoteSetId;
+  final String? ownerId;
   final String? color;
   final EmoteType emoteType;
   final bool isZeroWidth;
@@ -27,6 +29,8 @@ class Emote {
     required this.url1x,
     required this.url2x,
     required this.url4x,
+    required this.emoteSetId,
+    required this.ownerId,
     required this.color,
     required this.emoteType,
     required this.isZeroWidth,
@@ -45,6 +49,9 @@ class Emote {
         case "bitstier":
           emoteType = EmoteType.bitsTier;
           break;
+        default:
+          emoteType = EmoteType.global;
+          break;
       }
     }
 
@@ -54,6 +61,8 @@ class Emote {
       url1x: map['images']['url_1x'] as String,
       url2x: map['images']['url_2x'] as String,
       url4x: map['images']['url_4x'] as String,
+      emoteSetId: map['emote_set_id'],
+      ownerId: map['owner_id'],
       color: null,
       emoteType: emoteType,
       isZeroWidth: false,
@@ -67,6 +76,8 @@ class Emote {
       url1x: map['images']['dark']['animated']["1"] as String,
       url2x: map['images']['dark']['animated']["2"] as String,
       url4x: map['images']['dark']['animated']["4"] as String,
+      emoteSetId: null,
+      ownerId: null,
       color: map["color"] as String,
       emoteType: EmoteType.cheer,
       isZeroWidth: false,
@@ -80,6 +91,8 @@ class Emote {
       url1x: map['urls']['1'],
       url2x: map['urls']['2'] ?? "",
       url4x: map['urls']['4'] ?? "",
+      emoteSetId: null,
+      ownerId: null,
       color: null,
       emoteType: EmoteType.thirdPart,
       isZeroWidth: false,
@@ -93,6 +106,8 @@ class Emote {
       url1x: "https://cdn.betterttv.net/emote/${map['id']}/1x",
       url2x: "https://cdn.betterttv.net/emote/${map['id']}/2x",
       url4x: "https://cdn.betterttv.net/emote/${map['id']}/3x",
+      emoteSetId: null,
+      ownerId: null,
       color: null,
       emoteType: EmoteType.thirdPart,
       isZeroWidth: false,
@@ -111,11 +126,9 @@ class Emote {
         .where((element) => element['format'] == "WEBP")
         .toList();
 
-    String url1x = 'https://$url/' + webpfNames[0]['name'];
-
-    String url2x = 'https://$url/' + webpfNames[1]['name'];
-
-    String url4x = 'https://$url/' + webpfNames[2]['name'];
+    String url1x = 'https://$url/${webpfNames[0]['name']}';
+    String url2x = 'https://$url/${webpfNames[1]['name']}';
+    String url4x = 'https://$url/${webpfNames[2]['name']}';
 
     return Emote(
       id: map["id"].toString(),
@@ -123,6 +136,8 @@ class Emote {
       url1x: url1x,
       url2x: url2x,
       url4x: url4x,
+      emoteSetId: null,
+      ownerId: null,
       color: null,
       emoteType: EmoteType.thirdPart,
       isZeroWidth: false,

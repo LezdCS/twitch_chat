@@ -47,8 +47,9 @@ class TwitchChat {
 
   TwitchChatParameters _params;
   List<TwitchBadge> _badges = [];
-  List<Emote> _emotes = [];
-  List<Emote> _emotesFromSets = [];
+  List<Emote> _channelEmotes = [];
+  List<Emote> _globalEmotes = [];
+  List<Emote> _emotesFromSets = []; // Emotes that the user have access to (sub emotes for example)
   List<Emote> _cheerEmotes = [];
   List<Emote> _thirdPartEmotes = [];
 
@@ -76,7 +77,7 @@ class TwitchChat {
 
   List<TwitchBadge> get badges => _badges;
 
-  List<Emote> get emotes => _emotes;
+  List<Emote> get globalEmotes => _globalEmotes;
 
   List<Emote> get emotesFromSets => _emotesFromSets;
 
@@ -123,20 +124,31 @@ class TwitchChat {
 
   void _getChannelId() {
     _badges.clear();
-    _emotes.clear();
+    _globalEmotes.clear();
+    _channelEmotes.clear();
     _cheerEmotes.clear();
     _thirdPartEmotes.clear();
 
     TwitchApi.getTwitchUserChannelId(_channel, _token, _clientId!)
         .then((value) {
       _channelId = value;
+
+      // Get the badges
       TwitchBadge.getBadges(_token, _channelId!, _clientId!)
           .then((value) => _badges = value);
+
+      // Get the Twitch global emotes
       TwitchApi.getTwitchGlobalEmotes(_token, _clientId!)
-          .then((value) => _emotes = value);
+          .then((value) => _globalEmotes = value);
+      
+      // Get the channel emotes
       TwitchApi.getTwitchChannelEmotes(_token, _channelId!, _clientId!)
-          .then((value) => _emotes = value);
+          .then((value) => _channelEmotes = value);
+
+      // Get the third part emotes (BTTV, FFZ, 7TV)
       _getThirdPartEmotes().then((value) => _thirdPartEmotes = value);
+
+      // Get the cheer emotes of the channel
       TwitchApi.getCheerEmotes(_token, _channelId!, _clientId!).then(
         (value) => _cheerEmotes = value,
       );
@@ -384,12 +396,15 @@ class TwitchChat {
         }
       }
     } else if (message.contains("GLOBALUSERSTATE")) {
+      // Map the String
       final Map<String, String> messageMapped = {};
       List messageSplited = message.split(';');
       for (var element in messageSplited) {
         List elementSplited = element.split('=');
         messageMapped[elementSplited[0]] = elementSplited[1];
       }
+
+      // Get the emote-sets that the user have access to
       List<String> emoteSetsIds = messageMapped["emote-sets"]!.split(',');
       if (_clientId != null) {
         Emote.getTwitchSetsEmotes(_token, emoteSetsIds, _clientId!)
