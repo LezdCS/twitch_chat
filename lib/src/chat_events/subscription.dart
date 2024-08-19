@@ -10,43 +10,26 @@ class Subscription extends ChatMessage {
   final bool isGift;
 
   Subscription({
-    required id,
-    required badges,
-    required color,
-    required displayName,
-    required username,
-    required authorId,
-    required emotes,
-    required message,
-    required timestamp,
-    required highlightType,
-    required isAction,
-    required isDeleted,
-    required isSubscriber,
-    required isModerator,
-    required isVip,
-    required rawData,
+    required super.id,
+    required super.badges,
+    required super.color,
+    required super.displayName,
+    required super.username,
+    required super.authorId,
+    required super.emotes,
+    required super.message,
+    required super.timestamp,
+    required super.highlightType,
+    required super.isAction,
+    required super.isSubscriber,
+    required super.isModerator,
+    required super.isVip,
+    required super.isDeleted,
+    required super.rawData,
     required this.tier,
     required this.months,
     required this.isGift,
-  }) : super(
-          id: id,
-          badges: badges,
-          color: color,
-          displayName: displayName,
-          username: username,
-          authorId: authorId,
-          emotes: emotes,
-          message: message,
-          timestamp: timestamp,
-          highlightType: highlightType,
-          isAction: isAction,
-          isSubscriber: isSubscriber,
-          isModerator: isModerator,
-          isVip: isVip,
-          isDeleted: isDeleted,
-          rawData: rawData,
-        );
+  });
 
   factory Subscription.fromString({
     required List<TwitchBadge> twitchBadges,
@@ -99,7 +82,7 @@ class Subscription extends ChatMessage {
 
   factory Subscription.randomGeneration() {
     String message = "4 months already eheh";
-    List badges = <TwitchBadge>[
+    List<TwitchBadge> badges = <TwitchBadge>[
       const TwitchBadge(
         setId: 'sub-gifter',
         versionId: '1',

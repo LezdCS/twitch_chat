@@ -8,41 +8,24 @@ class BitDonation extends ChatMessage {
   final int totalBits;
 
   BitDonation({
-    required id,
-    required badges,
-    required color,
-    required displayName,
-    required username,
-    required authorId,
-    required emotes,
-    required message,
-    required timestamp,
-    required highlightType,
-    required isAction,
-    required isSubscriber,
-    required isModerator,
-    required isVip,
-    required isDeleted,
-    required rawData,
+    required super.id,
+    required super.badges,
+    required super.color,
+    required super.displayName,
+    required super.username,
+    required super.authorId,
+    required super.emotes,
+    required super.message,
+    required super.timestamp,
+    required super.highlightType,
+    required super.isAction,
+    required super.isSubscriber,
+    required super.isModerator,
+    required super.isVip,
+    required super.isDeleted,
+    required super.rawData,
     required this.totalBits,
-  }) : super(
-          id: id,
-          badges: badges,
-          color: color,
-          displayName: displayName,
-          username: username,
-          authorId: authorId,
-          emotes: emotes,
-          message: message,
-          timestamp: timestamp,
-          highlightType: highlightType,
-          isAction: isAction,
-          isSubscriber: isSubscriber,
-          isModerator: isModerator,
-          isVip: isVip,
-          isDeleted: isDeleted,
-          rawData: rawData,
-        );
+  });
 
   factory BitDonation.fromString({
     required List<TwitchBadge> twitchBadges,
@@ -92,7 +75,7 @@ class BitDonation extends ChatMessage {
 
   factory BitDonation.randomGeneration() {
     String message = "Here for you :)";
-    List badges = <TwitchBadge>[
+    List<TwitchBadge> badges = <TwitchBadge>[
       const TwitchBadge(
         setId: 'sub-gifter',
         versionId: '1',
