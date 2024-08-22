@@ -1,6 +1,6 @@
 name: twitch_chat
 description: twitch_tchat allows dart and flutter apps to exploit the Twitch IRC with Emotes and Badges.
-version: 1.3.0
+version: 1.3.1
 homepage: https://github.com/LezdCS/twitch_chat
 repository: https://github.com/LezdCS/twitch_chat
 

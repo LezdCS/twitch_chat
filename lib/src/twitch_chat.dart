@@ -171,7 +171,6 @@ class TwitchChat {
   //login to twitch chat through websocket
   void connect() {
     if (_streamSubscription != null) {
-      debugPrint("Twitch Chat: Already connected");
       return;
     }
 
@@ -198,7 +197,6 @@ class TwitchChat {
   }
 
   void _onDone() {
-    debugPrint("Twitch Chat: Connection closed");
     close();
     isConnected.value = false;
     if (onDone != null) {
@@ -216,8 +214,6 @@ class TwitchChat {
   }
 
   void _chatListener(String message) {
-    // debugPrint("Twitch Chat: $message");
-
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
     }

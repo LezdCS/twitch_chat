@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 List<String> parseMessage(String message) {
   List<String> keys = [
     "PRIVMSG",
@@ -18,7 +16,7 @@ List<String> parseMessage(String message) {
     }
   }
   if (i == 0) {
-    debugPrint(message);
+    //TODO: handle this case
   }
   String sub = message.substring(0, i - 1);
   String notToSplit = message.substring(i);
