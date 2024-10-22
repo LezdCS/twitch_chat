@@ -1,4 +1,6 @@
 @Timeout(Duration(seconds: 90000))
+library;
+
 
 import 'package:api_7tv/api_7tv.dart';
 import 'package:collection/collection.dart';
@@ -19,11 +21,11 @@ Future<void> main() async {
 
     List emotesCall = await SeventvApi.getChannelEmotes(channelId!) ?? [];
     List<Emote> emotes = [];
-    emotesCall.forEach(
-      (emote) => emotes.add(
+    for (var emote in emotesCall) {
+      emotes.add(
         Emote.fromJson7Tv(emote),
-      ),
-    );
+      );
+    }
 
     expect(emotes, isNotEmpty);
   });
@@ -36,7 +38,7 @@ Future<void> main() async {
     // chat.chatStream.listen((event) => debugPrint(event.toString()));
 
     chat.connect();
-    await Future.delayed(const Duration(seconds: 90000), () {});
+    await Future.delayed(const Duration(seconds: 10), () {});
     expectLater(chat.isConnected, true);
     chat.close();
   });
