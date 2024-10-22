@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:quiver/iterables.dart';
+import 'package:flutter/foundation.dart';
 
 enum EmoteType {
   global,
@@ -158,9 +157,13 @@ class Emote {
       dio.options.headers['Client-Id'] = clientId;
       dio.options.headers["authorization"] = "Bearer $token";
 
-      var chunks = partition(setId, 25);
+      List<List<String>> chunks = <List<String>>[];
+      for (int i = 0; i < setId.length; i += 100) {
+        chunks.add(setId.sublist(i, i + 100 > setId.length ? setId.length : i + 100));
+      }
 
-      for (var chunk in chunks) {
+
+      for (List<String> chunk in chunks) {
         await Future.delayed(const Duration(seconds: 5), () async {
           response = await dio.get(
             "https://api.twitch.tv/helix/chat/emotes/set",
