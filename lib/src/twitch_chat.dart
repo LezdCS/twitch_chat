@@ -238,7 +238,7 @@ class TwitchChat {
         "ROOMSTATE"
       ];
 
-      List messageSplited = parseMessage(message);
+      List<String> messageSplited = parseMessage(message);
 
       String? keyResult =
           keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
@@ -260,6 +260,7 @@ class TwitchChat {
                 cheerEmotes: _cheerEmotes,
                 thirdPartEmotes: _thirdPartEmotes,
                 message: message,
+                messageSplited: messageSplited,
               );
               _chatStreamController.add(bitDonation);
               break;
@@ -273,6 +274,7 @@ class TwitchChat {
                 thirdPartEmotes: _thirdPartEmotes,
                 cheerEmotes: _cheerEmotes,
                 message: message,
+                messageSplited: messageSplited,
               );
               _chatStreamController.add(rewardRedemption);
               break;
@@ -283,6 +285,7 @@ class TwitchChat {
               cheerEmotes: _cheerEmotes,
               message: message,
               params: _params,
+              messageSplited: messageSplited,
             );
             _chatStreamController.add(chatMessage);
           case 'ROOMSTATE':
@@ -317,7 +320,7 @@ class TwitchChat {
           case "USERNOTICE":
             final Map<String, String> messageMapped = {};
             //We split the message by ';' to get the different parts
-            List messageSplited = message.split(';');
+            List<String> messageSplited = message.split(';');
             //We split each part by '=' to get the key and the value
             for (var element in messageSplited) {
               List elementSplited = element.split('=');
@@ -335,6 +338,7 @@ class TwitchChat {
                   thirdPartEmotes: _thirdPartEmotes,
                   cheerEmotes: _cheerEmotes,
                   message: message,
+                  messageSplited: messageSplited,
                 );
                 _chatStreamController.add(announcement);
                 break;
@@ -347,6 +351,7 @@ class TwitchChat {
                   thirdPartEmotes: _thirdPartEmotes,
                   cheerEmotes: _cheerEmotes,
                   message: message,
+                  messageSplited: messageSplited,
                 );
                 _chatStreamController.add(subMessage);
                 break;
@@ -359,6 +364,7 @@ class TwitchChat {
                   thirdPartEmotes: _thirdPartEmotes,
                   cheerEmotes: _cheerEmotes,
                   message: message,
+                  messageSplited: messageSplited,
                 );
                 _chatStreamController.add(subMessage);
                 break;
@@ -371,6 +377,7 @@ class TwitchChat {
                   thirdPartEmotes: _thirdPartEmotes,
                   cheerEmotes: _cheerEmotes,
                   message: message,
+                  messageSplited: messageSplited,
                 );
                 _chatStreamController.add(subGift);
                 break;
@@ -383,6 +390,7 @@ class TwitchChat {
                   thirdPartEmotes: _thirdPartEmotes,
                   cheerEmotes: _cheerEmotes,
                   message: message,
+                  messageSplited: messageSplited,
                 );
                 _chatStreamController.add(raid);
                 break;

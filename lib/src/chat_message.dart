@@ -1,8 +1,7 @@
 import 'package:faker/faker.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
-import 'package:collection/collection.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
-import 'package:twitch_chat/src/utils/split_function.dart';
+import 'package:twitch_chat/src/utils/badges_parser.dart';
 import 'package:uuid/uuid.dart';
 
 import 'emote.dart';
@@ -62,10 +61,10 @@ class ChatMessage {
     required List<Emote> thirdPartEmotes,
     required String message,
     required TwitchChatParameters params,
+    required List<String> messageSplited,
   }) {
     final Map<String, String> messageMapped = {};
 
-    List<String> messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
@@ -166,25 +165,6 @@ class ChatMessage {
       }
     }
     return emotesIdsPositions;
-  }
-
-  static List<TwitchBadge> parseBadges(
-    String badgesString,
-    List<TwitchBadge> twitchBadges,
-  ) {
-    List<TwitchBadge> badges = <TwitchBadge>[];
-    List badgesSplited = badgesString.split(',');
-    if (badgesSplited.isNotEmpty) {
-      for (var i in badgesSplited) {
-        TwitchBadge? badgeFound = twitchBadges.firstWhereOrNull((badge) =>
-            badge.setId == i.split('/')[0] &&
-            badge.versionId == i.split('/')[1]);
-        if (badgeFound != null) {
-          badges.add(badgeFound);
-        }
-      }
-    }
-    return badges;
   }
 
   static String randomUsernameColor(String username) {

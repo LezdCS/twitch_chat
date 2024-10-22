@@ -1,8 +1,8 @@
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
+import 'package:twitch_chat/src/utils/badges_parser.dart';
 
 import '../emote.dart';
-import '../utils/split_function.dart';
 
 class Announcement extends ChatMessage {
   final String announcementColor;
@@ -32,10 +32,10 @@ class Announcement extends ChatMessage {
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,
+    required List<String> messageSplited,
   }) {
     final Map<String, String> messageMapped = {};
 
-    List messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
@@ -55,7 +55,7 @@ class Announcement extends ChatMessage {
     return Announcement(
       id: messageMapped['id'] as String,
       badges:
-          ChatMessage.parseBadges(messageMapped['badges'].toString(), badges),
+          parseBadges(messageMapped['badges'].toString(), badges),
       color: color,
       displayName: messageMapped['display-name'] as String,
       authorId: messageMapped['user-id'] as String,

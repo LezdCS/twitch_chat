@@ -1,8 +1,8 @@
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
+import 'package:twitch_chat/src/utils/badges_parser.dart';
 
 import '../emote.dart';
-import '../utils/split_function.dart';
 
 class SubGift extends ChatMessage {
   final String giftedName;
@@ -36,10 +36,10 @@ class SubGift extends ChatMessage {
     required List<Emote> cheerEmotes,
     required List<Emote> thirdPartEmotes,
     required String message,
+    required List<String> messageSplited,
   }) {
     final Map<String, String> messageMapped = {};
 
-    List messageSplited = parseMessage(message);
     for (var element in messageSplited) {
       List elementSplited = element.split('=');
       messageMapped[elementSplited[0]] = elementSplited[1];
@@ -56,7 +56,7 @@ class SubGift extends ChatMessage {
 
     return SubGift(
       id: messageMapped['id'] as String,
-      badges: ChatMessage.parseBadges(
+      badges: parseBadges(
         messageMapped['badges'].toString(),
         twitchBadges,
       ),
