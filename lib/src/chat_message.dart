@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
 import 'package:twitch_chat/src/utils/badges_parser.dart';
@@ -187,7 +186,7 @@ class ChatMessage {
   factory ChatMessage.randomGeneration(
       HighlightType? highlightType, String? message, String? u) {
     Uuid uuid = const Uuid();
-    String username = u ?? faker.internet.userName();
+    String username = 'Lezd_';
     String color = randomUsernameColor(username);
 
     return ChatMessage(
@@ -198,10 +197,8 @@ class ChatMessage {
       username: username,
       authorId: uuid.v4(),
       emotes: {},
-      message: message ?? faker.lorem.sentence(),
-      timestamp: faker.date
-          .dateTime(minYear: 2000, maxYear: 2020)
-          .microsecondsSinceEpoch,
+      message: 'What a nice stream!',
+      timestamp: DateTime.now().millisecondsSinceEpoch,
       highlightType: highlightType,
       isAction: false,
       isSubscriber: false,
