@@ -49,7 +49,8 @@ class TwitchChat {
   List<TwitchBadge> _badges = [];
   List<Emote> _channelEmotes = [];
   List<Emote> _globalEmotes = [];
-  List<Emote> _emotesFromSets = []; // Emotes that the user have access to (sub emotes for example)
+  List<Emote> _emotesFromSets =
+      []; // Emotes that the user have access to (sub emotes for example)
   List<Emote> _cheerEmotes = [];
   List<Emote> _thirdPartEmotes = [];
 
@@ -140,7 +141,7 @@ class TwitchChat {
       // Get the Twitch global emotes
       TwitchApi.getTwitchGlobalEmotes(_token, _clientId!)
           .then((value) => _globalEmotes = value);
-      
+
       // Get the channel emotes
       TwitchApi.getTwitchChannelEmotes(_token, _channelId!, _clientId!)
           .then((value) => _channelEmotes = value);
@@ -242,6 +243,7 @@ class TwitchChat {
 
       String? keyResult =
           keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
+
       final Map<String, String> messageMapped = {};
       for (var element in messageSplited) {
         List elementSplited = element.split('=');
@@ -261,6 +263,7 @@ class TwitchChat {
                 thirdPartEmotes: _thirdPartEmotes,
                 message: message,
                 messageSplited: messageSplited,
+                messageMapped: messageMapped,
               );
               _chatStreamController.add(bitDonation);
               break;
@@ -275,6 +278,7 @@ class TwitchChat {
                 cheerEmotes: _cheerEmotes,
                 message: message,
                 messageSplited: messageSplited,
+                messageMapped: messageMapped,
               );
               _chatStreamController.add(rewardRedemption);
               break;
@@ -286,6 +290,7 @@ class TwitchChat {
               message: message,
               params: _params,
               messageSplited: messageSplited,
+              messageMapped: messageMapped,
             );
             _chatStreamController.add(chatMessage);
           case 'ROOMSTATE':
@@ -339,6 +344,7 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                   messageSplited: messageSplited,
+                  messageMapped: messageMapped,
                 );
                 _chatStreamController.add(announcement);
                 break;
@@ -352,6 +358,7 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                   messageSplited: messageSplited,
+                  messageMapped: messageMapped,
                 );
                 _chatStreamController.add(subMessage);
                 break;
@@ -365,6 +372,7 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                   messageSplited: messageSplited,
+                  messageMapped: messageMapped,
                 );
                 _chatStreamController.add(subMessage);
                 break;
@@ -378,6 +386,7 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                   messageSplited: messageSplited,
+                  messageMapped: messageMapped,
                 );
                 _chatStreamController.add(subGift);
                 break;
@@ -391,6 +400,7 @@ class TwitchChat {
                   cheerEmotes: _cheerEmotes,
                   message: message,
                   messageSplited: messageSplited,
+                  messageMapped: messageMapped,
                 );
                 _chatStreamController.add(raid);
                 break;

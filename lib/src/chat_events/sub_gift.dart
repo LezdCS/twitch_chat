@@ -37,13 +37,8 @@ class SubGift extends ChatMessage {
     required List<Emote> thirdPartEmotes,
     required String message,
     required List<String> messageSplited,
+    required Map<String, String> messageMapped,
   }) {
-    final Map<String, String> messageMapped = {};
-
-    for (var element in messageSplited) {
-      List elementSplited = element.split('=');
-      messageMapped[elementSplited[0]] = elementSplited[1];
-    }
 
     String color =
         ChatMessage.randomUsernameColor(messageMapped['display-name']!);
