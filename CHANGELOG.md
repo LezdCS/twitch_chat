@@ -44,3 +44,6 @@ Add fields in the Emote class
 
 ## 1.3.1
 Remove debugPrints
+
+## 1.3.2
+Makes code cleaner 
