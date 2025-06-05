@@ -1,9 +1,9 @@
 @Timeout(Duration(seconds: 90000))
 library;
 
-
 import 'package:api_7tv/api_7tv.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twitch_chat/twitch_chat.dart';
 
@@ -35,10 +35,12 @@ Future<void> main() async {
       "lezd_",
     );
 
-    // chat.chatStream.listen((event) => debugPrint(event.toString()));
+    chat.chatStream.listen((event) {
+      debugPrint(event.toString());
+    });
 
     chat.connect();
-    await Future.delayed(const Duration(seconds: 10), () {});
+    await Future.delayed(const Duration(seconds: 100), () {});
     expectLater(chat.isConnected, true);
     chat.close();
   });

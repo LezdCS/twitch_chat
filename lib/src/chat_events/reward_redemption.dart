@@ -34,8 +34,8 @@ class RewardRedemption extends ChatMessage {
     required String message,
     required List<String> messageSplited,
     required Map<String, String> messageMapped,
+    required String trailing,
   }) {
-
     String color = messageMapped['color']!;
     if (color == "") {
       color = ChatMessage.randomUsernameColor(messageMapped['display-name']!);
@@ -44,13 +44,12 @@ class RewardRedemption extends ChatMessage {
     Map<String, List<List<String>>> emotesIdsPositions =
         ChatMessage.parseEmotes(messageMapped);
 
-    List messageList = messageSplited.last.split(':').sublist(2);
-    String messageString = messageList.join(':');
+    String messageString;
+    messageString = trailing;
 
     return RewardRedemption(
       id: messageMapped['id'] as String,
-      badges: parseBadges(
-          messageMapped['badges'].toString(), twitchBadges),
+      badges: parseBadges(messageMapped['badges'].toString(), twitchBadges),
       color: color,
       displayName: messageMapped['display-name'] as String,
       username: '',

@@ -34,8 +34,8 @@ class IncomingRaid extends ChatMessage {
     required String message,
     required List<String> messageSplited,
     required Map<String, String> messageMapped,
+    String? trailing,
   }) {
-
     return IncomingRaid(
       id: messageMapped['id'] as String,
       badges: <TwitchBadge>[],
