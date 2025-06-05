@@ -46,9 +46,6 @@ class SubGift extends ChatMessage {
     Map<String, List<List<String>>> emotesIdsPositions =
         ChatMessage.parseEmotes(messageMapped);
 
-    String messageString;
-    messageString = trailing;
-
     return SubGift(
       id: messageMapped['id'] as String,
       badges: parseBadges(
@@ -60,7 +57,7 @@ class SubGift extends ChatMessage {
       username: '',
       authorId: messageMapped['user-id'] as String,
       emotes: emotesIdsPositions,
-      message: messageString,
+      message: trailing,
       timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
       highlightType: HighlightType.subscriptionGifted,
       isAction: false,

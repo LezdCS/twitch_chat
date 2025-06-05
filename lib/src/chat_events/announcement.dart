@@ -44,9 +44,6 @@ class Announcement extends ChatMessage {
     Map<String, List<List<String>>> emotesIdsPositions =
         ChatMessage.parseEmotes(messageMapped);
 
-    String messageString;
-    messageString = trailing;
-
     return Announcement(
       id: messageMapped['id'] as String,
       badges: parseBadges(messageMapped['badges'].toString(), badges),
@@ -55,7 +52,7 @@ class Announcement extends ChatMessage {
       authorId: messageMapped['user-id'] as String,
       username: '',
       emotes: emotesIdsPositions,
-      message: messageString,
+      message: trailing,
       timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
       highlightType: HighlightType.announcement,
       isAction: false,

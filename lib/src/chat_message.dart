@@ -85,11 +85,8 @@ class ChatMessage {
       highlightType = HighlightType.highlightedMessage;
     }
 
-    String messageString;
-    String username;
-
-    messageString = trailing;
-    username = messageMapped['display-name']?.toLowerCase() ?? '';
+    String messageString = trailing;
+    String username = messageMapped['display-name']?.toLowerCase() ?? '';
 
     bool isAction = messageString.startsWith("ACTION");
     if (isAction) {
