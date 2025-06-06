@@ -214,6 +214,18 @@ class TwitchChat {
   }
 
   void _chatListener(String message) {
+    // Split the message by newlines as WebSocket can receive multiple IRC messages at once
+    final lines = message.trim().split('\n');
+
+    for (final line in lines) {
+      final trimmedLine = line.trim();
+      if (trimmedLine.isEmpty) continue;
+
+      _processSingleMessage(trimmedLine);
+    }
+  }
+
+  void _processSingleMessage(String message) {
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
       return;
@@ -222,10 +234,11 @@ class TwitchChat {
     final IRCMessage? parsedMessage = RFC2812Parser.parseMessage(message);
     if (parsedMessage == null) return;
 
-    if (parsedMessage.prefix != null &&
-        parsedMessage.prefix!
-            .toLowerCase()
-            .contains('join #${_channel.toLowerCase()}')) {
+    // Check for JOIN command with the correct channel
+    if (parsedMessage.command == 'JOIN' &&
+        parsedMessage.parameters.isNotEmpty &&
+        parsedMessage.parameters.last.toLowerCase() ==
+            '#${_channel.toLowerCase()}') {
       isConnected.value = true;
       if (onConnected != null) {
         onConnected!();
