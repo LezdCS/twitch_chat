@@ -38,8 +38,8 @@ class Subscription extends ChatMessage {
     required String message,
     required List<String> messageSplited,
     required Map<String, String> messageMapped,
+    required String trailing,
   }) {
-
     String color = messageMapped['color']!;
     if (color == "") {
       color = ChatMessage.randomUsernameColor(messageMapped['display-name']!);
@@ -48,19 +48,15 @@ class Subscription extends ChatMessage {
     Map<String, List<List<String>>> emotesIdsPositions =
         ChatMessage.parseEmotes(messageMapped);
 
-    List messageList = messageSplited.last.split(':').sublist(2);
-    String messageString = messageList.join(':');
-
     return Subscription(
       id: messageMapped['id'] as String,
-      badges: parseBadges(
-          messageMapped['badges'].toString(), twitchBadges),
+      badges: parseBadges(messageMapped['badges'].toString(), twitchBadges),
       color: color,
       displayName: messageMapped['display-name'] as String,
       username: '',
       authorId: messageMapped['user-id'] as String,
       emotes: emotesIdsPositions,
-      message: messageString,
+      message: trailing,
       timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
       highlightType: HighlightType.subscription,
       isAction: false,

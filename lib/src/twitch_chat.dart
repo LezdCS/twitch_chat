@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:api_7tv/api_7tv.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:twitch_chat/src/twitch_badge.dart';
 import 'package:twitch_chat/src/chat_message.dart';
 import 'package:twitch_chat/src/data/ffz_api.dart';
 import 'package:twitch_chat/src/data/twitch_api.dart';
 import 'package:twitch_chat/src/twitch_chat_parameters.dart';
-import 'package:twitch_chat/src/utils/split_function.dart';
+import 'package:twitch_chat/src/utils/rfc_2812_parser.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'chat_events/announcement.dart';
@@ -215,217 +214,178 @@ class TwitchChat {
   }
 
   void _chatListener(String message) {
+    // Split the message by newlines as WebSocket can receive multiple IRC messages at once
+    final lines = message.trim().split('\n');
+
+    for (final line in lines) {
+      final trimmedLine = line.trim();
+      if (trimmedLine.isEmpty) continue;
+
+      _processSingleMessage(trimmedLine);
+    }
+  }
+
+  void _processSingleMessage(String message) {
     if (message.startsWith('PING ')) {
       _webSocketChannel?.sink.add("PONG :tmi.twitch.tv\r\n");
+      return;
     }
 
-    if (message.startsWith(':')) {
-      if (message.toLowerCase().contains('join #${_channel.toLowerCase()}')) {
-        isConnected.value = true;
-        if (onConnected != null) {
-          onConnected!();
+    final IRCMessage? parsedMessage = RFC2812Parser.parseMessage(message);
+    if (parsedMessage == null) return;
+
+    // Check for JOIN command with the correct channel
+    if (parsedMessage.command == 'JOIN' &&
+        parsedMessage.parameters.isNotEmpty &&
+        parsedMessage.parameters.last.toLowerCase() ==
+            '#${_channel.toLowerCase()}') {
+      isConnected.value = true;
+      if (onConnected != null) {
+        onConnected!();
+      }
+      return;
+    }
+
+    // Handle different message types based on command
+    switch (parsedMessage.command) {
+      case "PRIVMSG":
+        if (parsedMessage.tags['bits'] != null) {
+          if (!_params.addBitsDonations) return;
+          BitDonation bitDonation = BitDonation.fromString(
+            twitchBadges: _badges,
+            cheerEmotes: _cheerEmotes,
+            thirdPartEmotes: _thirdPartEmotes,
+            message: message,
+            messageSplited: parsedMessage.parameters,
+            messageMapped: parsedMessage.tags,
+            trailing: parsedMessage.trailing ?? '',
+          );
+          _chatStreamController.add(bitDonation);
+          return;
         }
-      }
-    }
+        if (parsedMessage.tags["custom-reward-id"] != null) {
+          if (!_params.addRewardsRedemptions) return;
+          RewardRedemption rewardRedemption = RewardRedemption.fromString(
+            twitchBadges: _badges,
+            thirdPartEmotes: _thirdPartEmotes,
+            cheerEmotes: _cheerEmotes,
+            message: message,
+            messageSplited: parsedMessage.parameters,
+            messageMapped: parsedMessage.tags,
+            trailing: parsedMessage.trailing ?? '',
+          );
+          _chatStreamController.add(rewardRedemption);
+          return;
+        }
+        ChatMessage chatMessage = ChatMessage.fromString(
+          twitchBadges: _badges,
+          thirdPartEmotes: _thirdPartEmotes,
+          cheerEmotes: _cheerEmotes,
+          message: message,
+          params: _params,
+          messageSplited: parsedMessage.parameters,
+          messageMapped: parsedMessage.tags,
+          trailing: parsedMessage.trailing ?? '',
+        );
+        _chatStreamController.add(chatMessage);
+        break;
 
-    if (message.startsWith('@')) {
-      // List messageSplited = message.split(';');
-      List<String> keys = [
-        "PRIVMSG",
-        "CLEARCHAT",
-        "CLEARMSG",
-        "USERNOTICE",
-        "NOTICE",
-        "ROOMSTATE"
-      ];
+      case "CLEARCHAT":
+        if (parsedMessage.tags['target-user-id'] != null) {
+          String userId = parsedMessage.tags['target-user-id']!;
+          if (onDeletedMessageByUserId != null) {
+            onDeletedMessageByUserId!(userId);
+          }
+        } else {
+          if (onClearChat != null) {
+            onClearChat!();
+          }
+        }
+        break;
 
-      List<String> messageSplited = parseMessage(message);
+      case "CLEARMSG":
+        if (parsedMessage.tags.containsKey('target-msg-id')) {
+          String messageId = parsedMessage.tags['target-msg-id']!;
+          if (onDeletedMessageByMessageId != null) {
+            onDeletedMessageByMessageId!(messageId);
+          }
+        }
+        break;
 
-      String? keyResult =
-          keys.firstWhereOrNull((key) => messageSplited.last.contains(key));
+      case "USERNOTICE":
+        final messageId = parsedMessage.tags['msg-id'];
+        if (messageId == null) return;
 
-      final Map<String, String> messageMapped = {};
-      for (var element in messageSplited) {
-        List elementSplited = element.split('=');
-        messageMapped[elementSplited[0]] = elementSplited[1];
-      }
+        switch (messageId) {
+          case "announcement":
+            if (!_params.addAnnouncements) return;
+            Announcement announcement = Announcement.fromString(
+              badges: _badges,
+              thirdPartEmotes: _thirdPartEmotes,
+              cheerEmotes: _cheerEmotes,
+              message: message,
+              messageSplited: parsedMessage.parameters,
+              messageMapped: parsedMessage.tags,
+              trailing: parsedMessage.trailing ?? '',
+            );
+            _chatStreamController.add(announcement);
+            break;
 
-      if (keyResult != null) {
-        switch (keyResult) {
-          case "PRIVMSG":
-            if (messageMapped['bits'] != null) {
-              if (!_params.addBitsDonations) {
-                return;
-              }
-              BitDonation bitDonation = BitDonation.fromString(
-                twitchBadges: _badges,
-                cheerEmotes: _cheerEmotes,
-                thirdPartEmotes: _thirdPartEmotes,
-                message: message,
-                messageSplited: messageSplited,
-                messageMapped: messageMapped,
-              );
-              _chatStreamController.add(bitDonation);
-              break;
-            }
-            if (messageMapped["custom-reward-id"] != null) {
-              if (!_params.addRewardsRedemptions) {
-                return;
-              }
-              RewardRedemption rewardRedemption = RewardRedemption.fromString(
-                twitchBadges: _badges,
-                thirdPartEmotes: _thirdPartEmotes,
-                cheerEmotes: _cheerEmotes,
-                message: message,
-                messageSplited: messageSplited,
-                messageMapped: messageMapped,
-              );
-              _chatStreamController.add(rewardRedemption);
-              break;
-            }
-            ChatMessage chatMessage = ChatMessage.fromString(
+          case "sub":
+          case "resub":
+            if (!_params.addSubscriptions) return;
+            Subscription subMessage = Subscription.fromString(
               twitchBadges: _badges,
               thirdPartEmotes: _thirdPartEmotes,
               cheerEmotes: _cheerEmotes,
               message: message,
-              params: _params,
-              messageSplited: messageSplited,
-              messageMapped: messageMapped,
+              messageSplited: parsedMessage.parameters,
+              messageMapped: parsedMessage.tags,
+              trailing: parsedMessage.trailing ?? '',
             );
-            _chatStreamController.add(chatMessage);
-          case 'ROOMSTATE':
+            _chatStreamController.add(subMessage);
             break;
-          case "CLEARCHAT":
-            if (messageMapped['target-user-id'] != null) {
-              // @ban-duration=43;room-id=169185650;target-user-id=107285371;tmi-sent-ts=1642601142470 :tmi.twitch.tv CLEARCHAT #robcdee :lezd_
-              String userId = messageMapped['target-user-id']!;
-              if (onDeletedMessageByUserId != null) {
-                onDeletedMessageByUserId!(userId);
-              }
-            } else {
-              //@room-id=107285371;tmi-sent-ts=1642256684032 :tmi.twitch.tv CLEARCHAT #lezd_
-              if (onClearChat != null) {
-                onClearChat!();
-              }
-            }
-          case "CLEARMSG":
-            //clear a specific msg by the id
-            // @login=lezd_;room-id=;target-msg-id=5ecb6458-198c-498c-b91b-16f1e12f58b4;tmi-sent-ts=1640717427981
-            // :tmi.twitch.tv CLEARMSG #lezd_ :okokok
-            if (messageMapped.containsKey('target-msg-id')) {
-              String messageId = messageMapped['target-msg-id']!;
-              if (onDeletedMessageByMessageId != null) {
-                onDeletedMessageByMessageId!(messageId);
-              }
-            }
-          case "NOTICE":
-            //error and success messages are send by notice
-            //https://dev.twitch.tv/docs/irc/msg-id
-            break;
-          case "USERNOTICE":
-            final Map<String, String> messageMapped = {};
-            //We split the message by ';' to get the different parts
-            List<String> messageSplited = message.split(';');
-            //We split each part by '=' to get the key and the value
-            for (var element in messageSplited) {
-              List elementSplited = element.split('=');
-              messageMapped[elementSplited[0]] = elementSplited[1];
-            }
 
-            String messageId = messageMapped['msg-id']!;
-            switch (messageId) {
-              case "announcement":
-                if (!_params.addAnnouncements) {
-                  return;
-                }
-                Announcement announcement = Announcement.fromString(
-                  badges: _badges,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  cheerEmotes: _cheerEmotes,
-                  message: message,
-                  messageSplited: messageSplited,
-                  messageMapped: messageMapped,
-                );
-                _chatStreamController.add(announcement);
-                break;
-              case "sub":
-                if (!_params.addSubscriptions) {
-                  return;
-                }
-                Subscription subMessage = Subscription.fromString(
-                  twitchBadges: _badges,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  cheerEmotes: _cheerEmotes,
-                  message: message,
-                  messageSplited: messageSplited,
-                  messageMapped: messageMapped,
-                );
-                _chatStreamController.add(subMessage);
-                break;
-              case "resub":
-                if (!_params.addSubscriptions) {
-                  return;
-                }
-                Subscription subMessage = Subscription.fromString(
-                  twitchBadges: _badges,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  cheerEmotes: _cheerEmotes,
-                  message: message,
-                  messageSplited: messageSplited,
-                  messageMapped: messageMapped,
-                );
-                _chatStreamController.add(subMessage);
-                break;
-              case "subgift":
-                if (!_params.addSubscriptions) {
-                  return;
-                }
-                SubGift subGift = SubGift.fromString(
-                  twitchBadges: _badges,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  cheerEmotes: _cheerEmotes,
-                  message: message,
-                  messageSplited: messageSplited,
-                  messageMapped: messageMapped,
-                );
-                _chatStreamController.add(subGift);
-                break;
-              case "raid":
-                if (!_params.addRaids) {
-                  return;
-                }
-                IncomingRaid raid = IncomingRaid.fromString(
-                  twitchBadges: _badges,
-                  thirdPartEmotes: _thirdPartEmotes,
-                  cheerEmotes: _cheerEmotes,
-                  message: message,
-                  messageSplited: messageSplited,
-                  messageMapped: messageMapped,
-                );
-                _chatStreamController.add(raid);
-                break;
-              default:
-                break;
-            }
+          case "subgift":
+            if (!_params.addSubscriptions) return;
+            SubGift subGift = SubGift.fromString(
+              twitchBadges: _badges,
+              thirdPartEmotes: _thirdPartEmotes,
+              cheerEmotes: _cheerEmotes,
+              message: message,
+              messageSplited: parsedMessage.parameters,
+              messageMapped: parsedMessage.tags,
+              trailing: parsedMessage.trailing ?? '',
+            );
+            _chatStreamController.add(subGift);
+            break;
+
+          case "raid":
+            if (!_params.addRaids) return;
+            IncomingRaid raid = IncomingRaid.fromString(
+              twitchBadges: _badges,
+              thirdPartEmotes: _thirdPartEmotes,
+              cheerEmotes: _cheerEmotes,
+              message: message,
+              messageSplited: parsedMessage.parameters,
+              messageMapped: parsedMessage.tags,
+              trailing: parsedMessage.trailing,
+            );
+            _chatStreamController.add(raid);
+            break;
         }
-      }
-    } else if (message.contains("GLOBALUSERSTATE")) {
-      // Map the String
-      final Map<String, String> messageMapped = {};
-      List messageSplited = message.split(';');
-      for (var element in messageSplited) {
-        List elementSplited = element.split('=');
-        messageMapped[elementSplited[0]] = elementSplited[1];
-      }
+        break;
 
-      // Get the emote-sets that the user have access to
-      List<String> emoteSetsIds = messageMapped["emote-sets"]!.split(',');
-      if (_clientId != null) {
-        Emote.getTwitchSetsEmotes(_token, emoteSetsIds, _clientId!)
-            .then((value) {
-          _emotesFromSets = value;
-        });
-      }
+      case "GLOBALUSERSTATE":
+        final emoteSets = parsedMessage.tags["emote-sets"];
+        if (emoteSets != null && _clientId != null) {
+          List<String> emoteSetsIds = emoteSets.split(',');
+          Emote.getTwitchSetsEmotes(_token, emoteSetsIds, _clientId!)
+              .then((value) {
+            _emotesFromSets = value;
+          });
+        }
+        break;
     }
   }
 

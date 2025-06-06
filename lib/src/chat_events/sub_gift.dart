@@ -38,16 +38,13 @@ class SubGift extends ChatMessage {
     required String message,
     required List<String> messageSplited,
     required Map<String, String> messageMapped,
+    required String trailing,
   }) {
-
     String color =
         ChatMessage.randomUsernameColor(messageMapped['display-name']!);
 
     Map<String, List<List<String>>> emotesIdsPositions =
         ChatMessage.parseEmotes(messageMapped);
-
-    List messageList = messageSplited.last.split(':').sublist(2);
-    String messageString = messageList.join(':');
 
     return SubGift(
       id: messageMapped['id'] as String,
@@ -60,7 +57,7 @@ class SubGift extends ChatMessage {
       username: '',
       authorId: messageMapped['user-id'] as String,
       emotes: emotesIdsPositions,
-      message: messageString,
+      message: trailing,
       timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
       highlightType: HighlightType.subscriptionGifted,
       isAction: false,

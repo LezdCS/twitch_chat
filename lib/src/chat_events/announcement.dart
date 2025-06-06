@@ -34,8 +34,8 @@ class Announcement extends ChatMessage {
     required String message,
     required List<String> messageSplited,
     required Map<String, String> messageMapped,
+    required String trailing,
   }) {
-
     String color = messageMapped['color']!;
     if (color == "") {
       color = ChatMessage.randomUsernameColor(messageMapped['display-name']!);
@@ -44,19 +44,15 @@ class Announcement extends ChatMessage {
     Map<String, List<List<String>>> emotesIdsPositions =
         ChatMessage.parseEmotes(messageMapped);
 
-    List messageList = messageSplited.last.split(':').sublist(2);
-    String messageString = messageList.join(':');
-
     return Announcement(
       id: messageMapped['id'] as String,
-      badges:
-          parseBadges(messageMapped['badges'].toString(), badges),
+      badges: parseBadges(messageMapped['badges'].toString(), badges),
       color: color,
       displayName: messageMapped['display-name'] as String,
       authorId: messageMapped['user-id'] as String,
       username: '',
       emotes: emotesIdsPositions,
-      message: messageString,
+      message: trailing,
       timestamp: int.parse(messageMapped['tmi-sent-ts'] as String),
       highlightType: HighlightType.announcement,
       isAction: false,

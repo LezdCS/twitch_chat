@@ -62,6 +62,7 @@ class ChatMessage {
     required TwitchChatParameters params,
     required List<String> messageSplited,
     required Map<String, String> messageMapped,
+    required String trailing,
   }) {
     List<TwitchBadge> badges = parseBadges(
       messageMapped['badges'].toString(),
@@ -84,16 +85,9 @@ class ChatMessage {
       highlightType = HighlightType.highlightedMessage;
     }
 
-    // We extract the message from a string as bellow
-    // user-type= :lezd_!lezd_@lezd_.tmi.twitch.tv PRIVMSG #lezd_ :tttt
-    List messageList = messageSplited.last.split(':').sublist(2);
-    String messageString = messageList.join(':');
+    String messageString = trailing;
+    String username = messageMapped['display-name']?.toLowerCase() ?? '';
 
-    // We extract the username from a string as bellow
-    // user-type= :lezd_!lezd_@lezd_.tmi.twitch.tv PRIVMSG #lezd_ :tttt
-    String username = messageSplited.last.split(':')[1].split('!')[0];
-
-    //We check if the message is an action (/me)
     bool isAction = messageString.startsWith("ACTION");
     if (isAction) {
       messageString = messageString
