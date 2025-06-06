@@ -47,3 +47,6 @@ Remove debugPrints
 
 ## 1.3.2
 Makes code cleaner 
+
+## 2.0.0
+Replace the custom parser by a RFC 2812 parser
